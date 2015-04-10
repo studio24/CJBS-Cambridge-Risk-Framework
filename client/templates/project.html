@@ -1,0 +1,9 @@
+<div class="dark title-bar">
+    <div class="left title"><a ui-sref="home" ng-bind="project.name">Cambridge Risk Assessment</a></div>
+    <span class="right"><a zf-toggle="cassandra">About</a></span>
+</div>
+<div class="grid-block shrink" ng-include="'partials/crs-section-navigation.html'"></div>
+<div ui-view="content" class="grid-block" >
+    Select a section
+</div>
+<div class="grid-block shrink player" ui-view="phase-navigation"></div>

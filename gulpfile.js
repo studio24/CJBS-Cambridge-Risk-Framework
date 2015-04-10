@@ -24,19 +24,22 @@ var sassPaths = [
 ];
 // These files include Foundation for Apps and its dependencies
 var foundationJS = [
-  'bower_components/fastclick/lib/fastclick.js',
-  'bower_components/viewport-units-buggyfill/viewport-units-buggyfill.js',
-  'bower_components/tether/tether.js',
-  'bower_components/angular/angular.js',
-  'bower_components/angular-animate/angular-animate.js',
-  'bower_components/angular-ui-router/release/angular-ui-router.js',
-  'bower_components/foundation-apps/js/vendor/**/*.js',
-  'bower_components/foundation-apps/js/angular/**/*.js',
-  '!bower_components/foundation-apps/js/angular/app.js'
+    'bower_components/fastclick/lib/fastclick.js',
+    'bower_components/viewport-units-buggyfill/viewport-units-buggyfill.js',
+    'bower_components/tether/tether.js',
+    'bower_components/angular/angular.js',
+    'bower_components/angular-animate/angular-animate.js',
+    'bower_components/angular-ui-router/release/angular-ui-router.js',
+    'bower_components/foundation-apps/js/vendor/**/*.js',
+    'bower_components/foundation-apps/js/angular/**/*.js',
+    '!bower_components/foundation-apps/js/angular/app.js',
+    'bower_components/hammerjs/hammer.js',
+    'bower_components/lodash/lodash.js',
+    'bower_components/restangular/dist/restangular.js'
 ];
 // These files are for your app's JavaScript
 var appJS = [
-  'client/assets/js/app.js'
+    'client/assets/js/**/*.js'
 ];
 
 // 3. TASKS
@@ -102,13 +105,13 @@ gulp.task('uglify', function() {
 
   // App JavaScript
   return gulp.src(appJS)
-    .pipe($.uglify({
-      beautify: true,
-      mangle: false
-    }).on('error', function(e) {
-      console.log(e);
-    }))
-    .pipe($.concat('app.js'))
+    //.pipe($.uglify({
+    //  beautify: false,
+    //  mangle: false
+    //}).on('error', function(e) {
+    //  console.log(e);
+    //}))
+    //.pipe($.concat('app.js'))
     .pipe(gulp.dest('./build/assets/js/'))
   ;
 });
@@ -144,7 +147,7 @@ gulp.task('build', function() {
 });
 
 // Default task: builds your app, starts a server, and recompiles assets when they change
-gulp.task('default', ['build', 'server:start'], function() {
+gulp.task('default', ['build'], function() {
   // Watch Sass
   gulp.watch(['./client/assets/scss/**/*', './scss/**/*'], ['sass']);
 

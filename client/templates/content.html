@@ -1,0 +1,18 @@
+<div class="grid-block">
+
+    <!-- Main content (chart) panel -->
+    <div ng-if="content.ijs_url" class="small-12 medium-12 large-10 grid-content">
+        <p ng-bind="content.ijs_url">This will be replaced with the chart object</p>
+    </div>
+
+    <!-- Cassandra panel -->
+    <div zf-panel ng-if="content.cassandraheadline" position="right" id="cassandra" class="fast slideInOut large-2 large-grid-block vertical">
+        <div class="content">
+            <h2 ng-bind="content.cassandraheadline">Headline</h2>
+            <img ng-if="content.cassandraimageid" ng-src="contant.cassandraimageid" alt=""/>
+            <h3 ng-bind="content.cassandrasubtitle">Subtitle</h3>
+            <div ng-bind="content.cassandrabody"></div>
+        </div>
+    </div>
+
+</div>
