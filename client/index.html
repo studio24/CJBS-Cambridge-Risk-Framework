@@ -10,6 +10,7 @@
 
     <script src="/assets/js/app.js"></script>
     <script src="/assets/js/services/http-service.js"></script>
+    <script src="/assets/js/services/utils-service.js"></script>
     <script src="/assets/js/controllers/projects-controller.js"></script>
 </head>
 <body ng-class="state.bodyClass">
@@ -17,5 +18,12 @@
         <div id="root-container" ui-view="content" class="grid-block vertical"></div>
     </div>
     <zf-notification-set id="main-notifications" position="top-right"></zf-notification-set>
+    <zf-modal id="main-modal">
+        <aside class="modal">
+            <a zf-close="" class="close-button">×</a>
+            <h3 ng-bind="modal.title">Modal title</h3>
+            <p ng-bind="modal.content">Modal body copy...</p>
+        </aside>
+    </zf-modal>
 </body>
 </html>

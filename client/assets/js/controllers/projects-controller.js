@@ -36,3 +36,10 @@ app.controller('crfPhaseController', function ( $scope, phase ) {
     $scope.content = phase;
 
 });
+
+app.controller('crfVisualisationController', function ( $scope, visualisation ) {
+
+    $scope.visualisation = visualisation;
+    console.log( 'Visualisation added to scope:', $scope.visualisation );
+
+});

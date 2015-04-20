@@ -22,7 +22,8 @@ config.$inject = ['$urlRouterProvider', '$locationProvider', '$stateProvider', '
 
 function config($urlProvider, $locationProvider, $stateProvider, RestangularProvider) {
 
-    RestangularProvider.setBaseUrl('http://sybil-api.cambridgeriskframework.com/api/');
+    RestangularProvider.setBaseUrl('http://sybil-api.cambridgeriskframework.com/api/')
+        .setRequestSuffix('/');
 
     $stateProvider
         .state('home', {
@@ -79,8 +80,33 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             url: '/:sectionNumber',
             views       : {
                 "content": {
-                    templateUrl: 'templates/section.html',
+                    templateUrl: 'templates/content.html',
                     controller: 'crfSectionController'
+                },
+                "phase-navigation": {
+                    templateUrl: 'templates/phase-navigation.html',
+                    controller: 'crfSectionController'
+                }
+            }
+        })
+        .state('project.section.visualisation', {
+            resolve     : {
+                visualisation: [ '$stateParams', '$filter', 'ijsRequest', 'section', function( $stateParams, $filter, ijsRequest, section ) {
+
+                    var visualisationType = $stateParams.visualisationType;
+
+                    // We have the IJS type, not the URL, so we need to grab the URL from the section object.
+                    var visualisationUrl = section.ijs_urls[visualisationType];
+
+                    return ijsRequest.get( visualisationUrl );
+
+                }]
+            },
+            url: '/:visualisationType',
+            views: {
+                "visualisation": {
+                    templateUrl: 'templates/visualisation.html',
+                    controller: 'crfVisualisationController'
                 }
             }
         })
@@ -101,9 +127,30 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             },
             url: '/:phaseNumber',
             views: {
-                "content": {
+                "content@project": {
                     templateUrl: 'templates/content.html',
                     controller: 'crfPhaseController'
+                }
+            }
+        })
+        .state('project.section.phase.visualisation', {
+            resolve     : {
+                visualisation: [ '$stateParams', '$filter', 'ijsRequest', 'phase', function( $stateParams, $filter, ijsRequest, phase ) {
+
+                    var visualisationType = $stateParams.visualisationType;
+
+                    // We have the IJS type, not the URL, so we need to grab the URL from the section object.
+                    var visualisationUrl = phase.ijs_urls[visualisationType];
+
+                    return ijsRequest.get( visualisationUrl );
+
+                }]
+            },
+            url: '/:visualisationType',
+            views: {
+                "visualisation": {
+                    templateUrl: 'templates/visualisation.html',
+                    controller: 'crfVisualisationController'
                 }
             }
         })
@@ -122,7 +169,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
         $locationProvider.hashPrefix('!');
     }
 
-function run($rootScope, $timeout) {
+function run($rootScope, $timeout, $state, utilsService, FoundationApi) {
 
     $rootScope.state = {
         loading     : false,
@@ -149,37 +196,49 @@ function run($rootScope, $timeout) {
                 $rootScope.state.bodyClass = 'loaded';
             },300);
             console.log('State change successful.');
+            //utilsService.notify({
+            //    title       : 'State change successful',
+            //    content     : 'From "' + ((fromState && fromState.name != '') ? fromState.name : 'no state') + '" to  "'+ (toState && toState.name) + '".',
+            //    color       : 'success',
+            //    autoclose   : 3000
+            //});
         });
 
     // Report errors in state transitions
     $rootScope.$on("$stateChangeError", function (event, toState, toParams, fromState, fromParams, error) {
 
-        console.log('Error on StateChange from: "' + (fromState && fromState.name) + '" to:  "'+ toState.name + '", err:' + error.message + ", code: " + error.status);
+        var errorMessage = 'Error on StateChange from: "' + (fromState && fromState.name) + '" to:  "'+ toState.name + '", err:' + error.message + ", code: " + error.status;
+        console.log(errorMessage);
 
-        if(error.status === 401) { // Unauthorized
+        if(error.status == 404 || error.status == 500 ) {
 
-            $state.go('signin.content');
-
-        } else if (error.status === 503) {
-            // the backend is down for maintenance, we stay on the page
-            // a message is shown to the user automatically by the error interceptor
-            event.preventDefault();
-        } else {
-
-            $rootScope.$emit('clientmsg:error', error);
-            console.log('Stack: ' + error.stack);
-
-            // check if we tried to go to a home state, then we cannot redirect again to the same
-            // homestate, because that would lead to a loop
-            if (toState.name === 'home') {
-                return $state.go('error');
-            } else {
-                return $state.go('home');
-            }
+            utilsService.alert({
+                title   : error.status,
+                content : error.data.detail + '<br/>' +
+                    'URL: ' + error.config.url
+            });
 
         }
 
-        FoundationApi.publish('main-notifications', { title: 'Error', content: 'Could not transition to "' + toState.name + '" state.', color: 'success', autoclose: '3000'});
+        $rootScope.$emit('clientmsg:error', error);
+        console.log('Stack: ' + error.stack);
+
+        utilsService.notify({
+            title       : 'State change error',
+            content     : 'Could not change from "' + ((fromState && fromState.name != '') ? fromState.name : 'no state') + '" to  "'+ (toState && toState.name) + '". ' +
+                'Reverting to previous state.',
+            color       : 'error'
+        });
+
+        $state.reload();
+
+        // check if we tried to go to a home state, then we cannot redirect again to the same
+        // homestate, because that would lead to a loop
+        //if (toState.name === 'home') {
+        //    return $state.go('error');
+        //} else {
+        //    return $state.go('home');
+        //}
 
     });
 }

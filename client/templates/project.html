@@ -7,9 +7,6 @@
             <a ui-sref="project.section({ sectionNumber: section.sectionnumber })" ui-sref-active="active" ng-bind="section.title">Section title</a>
         </li>
     </ul>
-    <div class="loadingMask" ng-show='stateIsLoading'>
-        <strong>Loading.</strong>
-    </div>
 </nav>
 <div id="section-container" class="grid-block vertical">
     <div ui-view="content" class="grid-block vertical">
@@ -22,4 +19,5 @@
             <p ng-bind="content.ijs_url"></p>
         </div>
     </div>
+    <nav ui-view="phase-navigation" class="grid-block shrink"></nav>
 </div>

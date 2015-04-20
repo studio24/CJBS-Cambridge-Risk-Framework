@@ -10,6 +10,21 @@ app.factory('phases', function ( Restangular ) {
     return Restangular.all('phases');
 });
 
+// Restangular service that uses a different URL
+app.factory('IJSRestangular', function(Restangular) {
+    return Restangular.withConfig(function(RestangularConfigurer) {
+        RestangularConfigurer.setBaseUrl('http://sybil-api.cambridgeriskframework.com');
+    });
+});
+
+app.factory('ijsRequest', function ( IJSRestangular ) {
+    return IJSRestangular.all('');
+});
+
+
+
+// Filters
+
 app.filter('getByAttr', function() {
     var getByAttr = function(input, attr, val) {
         var i=0, len=input.length;

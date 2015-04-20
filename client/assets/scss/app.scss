@@ -152,6 +152,11 @@ body {
                 @include loading-wheel('Loading...');
             }
         }
+        &.project-section-visualisation, &.project-section-phase-visualisation {
+            #visualisation-container {
+                @include loading-wheel('Loading...');
+            }
+        }
     }
     &.loaded {
         &.project, &.home {
@@ -173,6 +178,14 @@ body {
         }
         &.project-section-phase {
             #content-container {
+                @include loading-wheel('Loading...');
+                &:before, &:after {
+                    animation-name: fadeOut;
+                }
+            }
+        }
+        &.project-section-visualisation, &.project-section-phase-visualisation {
+            #visualisation-container {
                 @include loading-wheel('Loading...');
                 &:before, &:after {
                     animation-name: fadeOut;
