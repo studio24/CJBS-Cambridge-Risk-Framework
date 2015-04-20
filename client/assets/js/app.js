@@ -3,6 +3,8 @@
 var app = angular.module('application', [
     'ui.router',
     'ngAnimate',
+    'ngCookies',
+    'ngSanitize',
 
     //foundation
     'foundation',
@@ -33,11 +35,11 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }]
             },
             url: '/',
-            templateUrl : 'templates/home.html',
-            controller  : 'crfProjectListController',
-            animation   : {
-                enter   : 'slideInRight',
-                leave   : 'slideOutRight'
+            views       : {
+                "content": {
+                    templateUrl: 'templates/home.html',
+                    controller: 'crfProjectListController'
+                }
             }
         })
         .state('project', {
@@ -52,11 +54,11 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }]
             },
             url         : '/:projectId',
-            templateUrl : 'templates/project.html',
-            controller  : 'crfProjectController',
-            animation   : {
-                enter   : 'slideInRight',
-                leave   : 'slideOutRight'
+            views       : {
+                "content": {
+                    templateUrl: 'templates/project.html',
+                    controller: 'crfProjectController'
+                }
             }
         })
         .state('project.section', {
@@ -75,13 +77,9 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }]
             },
             url: '/:sectionNumber',
-            animation   : {
-                enter: 'slideInRight',
-                leave: 'slideOutRight'
-            },
             views       : {
-                "phase-navigation@project": {
-                    templateUrl: 'templates/phase-navigation.html',
+                "content": {
+                    templateUrl: 'templates/section.html',
                     controller: 'crfSectionController'
                 }
             }
@@ -102,12 +100,8 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }]
             },
             url: '/:phaseNumber',
-            animation   : {
-                enter   : 'slideInRight',
-                leave   : 'slideOutRight'
-            },
             views: {
-                "content@project": {
+                "content": {
                     templateUrl: 'templates/content.html',
                     controller: 'crfPhaseController'
                 }
@@ -115,11 +109,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
         })
         .state('settings', {
             url: '/settings',
-            templateUrl : 'templates/settings.html',
-            animation   : {
-                enter   : 'slideInRight',
-                leave   : 'slideOutRight'
-            }
+            templateUrl : 'templates/settings.html'
         });
 
         $urlProvider.otherwise('/');
@@ -132,8 +122,34 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
         $locationProvider.hashPrefix('!');
     }
 
-function run($rootScope) {
+function run($rootScope, $timeout) {
+
+    $rootScope.state = {
+        loading     : false,
+        bodyClass   : ""
+    };
+
     FastClick.attach(document.body);
+
+    $rootScope
+        .$on('$stateChangeStart',
+        function(event, toState, toParams, fromState, fromParams){
+            $rootScope.state.loading = true;
+            $rootScope.state.bodyClass = 'loading ' + toState.name.split('.').join('-');
+            console.log('State changing from "' + fromState.name + '" to "' + toState.name + '"...');
+        });
+
+    $rootScope
+        .$on('$stateChangeSuccess',
+        function(event, toState, toParams, fromState, fromParams){
+            $rootScope.state.loading = false;
+            $rootScope.state.bodyClass = 'loaded ' + toState.name.split('.').join('-');
+            // Set timeout before removing the section class to allow for CSS animation.
+            $timeout(function () {
+                $rootScope.state.bodyClass = 'loaded';
+            },300);
+            console.log('State change successful.');
+        });
 
     // Report errors in state transitions
     $rootScope.$on("$stateChangeError", function (event, toState, toParams, fromState, fromParams, error) {
@@ -162,6 +178,8 @@ function run($rootScope) {
             }
 
         }
+
+        FoundationApi.publish('main-notifications', { title: 'Error', content: 'Could not transition to "' + toState.name + '" state.', color: 'success', autoclose: '3000'});
 
     });
 }

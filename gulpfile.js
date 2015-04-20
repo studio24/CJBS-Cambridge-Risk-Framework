@@ -30,6 +30,8 @@ var foundationJS = [
     'bower_components/angular/angular.js',
     'bower_components/angular-animate/angular-animate.js',
     'bower_components/angular-ui-router/release/angular-ui-router.js',
+    'bower_components/angular-sanitize/angular-sanitize.js',
+    'bower_components/angular-cookies/angular-cookies.js',
     'bower_components/foundation-apps/js/vendor/**/*.js',
     'bower_components/foundation-apps/js/angular/**/*.js',
     '!bower_components/foundation-apps/js/angular/app.js',
@@ -118,13 +120,14 @@ gulp.task('uglify', function() {
 
 // Copies your app's page templates and generates URLs for them
 gulp.task('copy-templates', ['copy'], function() {
-  return gulp.src('./client/templates/**/*.html')
-    .pipe(router({
-      path: 'build/assets/js/routes.js',
-      root: 'client'
-    }))
-    .pipe(gulp.dest('./build/templates'))
-  ;
+    return gulp.src('./client/templates/**/*.html')
+    // Foundation's dynamic routing. Disabled as it's
+    // only useful for simple apps and prototypes
+    //.pipe(router({
+    //  path: 'build/assets/js/routes.js',
+    //  root: 'client'
+    //}))
+    .pipe(gulp.dest('./build/templates'));
 });
 
 // Starts a test server, which you can view at http://localhost:8080

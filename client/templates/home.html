@@ -1,17 +1,25 @@
-<div class="dark title-bar">
-    <div class="left title"><a ui-sref="home">Cambridge Risk Framework</a></div>
-    <a class="right" href="#" title="My notification" content="Notification example" color="success" autoclose="3000" zf-notify="main-notifications">Dynamic Notification</a>
+<div class="title-bar">
+    <div class="left title"><a ui-sref="home">Cambridge Risk Assessment</a></div>
 </div>
-<div class="grid-block">
-    <nav class="grid-content project-navigation" ng-if="projects.length > 0">
+<div class="grid-block" ng-if="projects.length > 0">
+    <nav class="grid-content project-navigation" >
         <ul class="grid-block small-up-2 medium-up-4 large-up-6">
-            <li ng-repeat="project in projects" class="grid-content">
+            <li ng-repeat="project in projects | filter:searchText" class="grid-content">
                 <a class="card project-link" ui-sref="project({ projectId: project.id })">
-                    <img src="http://placehold.it/400x200">
+                    <img ng-src="{{project.thumbnail_image}}">
                     <div class="card-divider" ng-bind="project.name">Project title</div>
                     <div class="card-section" ng-bind="project.description">Project description</div>
                 </a>
             </li>
         </ul>
     </nav>
+    <div id="project-filters" class="fast slideInOut medium-3 large-2 medium-grid-block large-grid-block vertical">
+        <div class="grid-content filters">
+            <div class="content">
+                <h3>Filter projects</h3>
+                <label for="keyword-filter">Filter by keywords</label>
+                <input id="keyword-filter" ng-model="searchText" placeholder="Enter keywords">
+            </div>
+        </div>
+    </div>
 </div>

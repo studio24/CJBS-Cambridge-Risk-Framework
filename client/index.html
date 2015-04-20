@@ -12,8 +12,10 @@
     <script src="/assets/js/services/http-service.js"></script>
     <script src="/assets/js/controllers/projects-controller.js"></script>
 </head>
-<body>
-    <div class="grid-frame vertical" ui-view ng-class="['ui-animation' ]"></div>
-    <zf-notification-set id="main-notifications" position="bottom-left"></zf-notification-set>
+<body ng-class="state.bodyClass">
+    <div class="grid-frame">
+        <div id="root-container" ui-view="content" class="grid-block vertical"></div>
+    </div>
+    <zf-notification-set id="main-notifications" position="top-right"></zf-notification-set>
 </body>
 </html>
