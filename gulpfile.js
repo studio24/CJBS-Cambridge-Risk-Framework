@@ -37,6 +37,7 @@ var foundationJS = [
     '!bower_components/foundation-apps/js/angular/app.js',
     'bower_components/hammerjs/hammer.js',
     'bower_components/lodash/lodash.js',
+    'bower_components/d3/d3.js',
     'bower_components/restangular/dist/restangular.js'
 ];
 // These files are for your app's JavaScript

@@ -42,4 +42,14 @@ app.controller('crfVisualisationController', function ( $scope, visualisation ) 
     $scope.visualisation = visualisation;
     console.log( 'Visualisation added to scope:', $scope.visualisation );
 
+    // Chart drawing logic goes here
+    $scope.loadVisualisation = function(visualisation) {
+        S24.Charts.createForceDirectedGraph('.visualisation', visualisation.graph1, {
+            width: '100%',
+            height: 1000
+        }, $scope);
+    };
+
+    $scope.loadVisualisation( $scope.visualisation );
+
 });

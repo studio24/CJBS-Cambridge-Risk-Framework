@@ -1,5 +1,5 @@
 <ul class="grid-block" ng-if="section.phases.length > 0">
     <li class="grid-block" ng-repeat="phase in section.phases">
-        <a class="grid-content" ui-sref="project.section.phase({ phaseNumber: phase.phasenumber })" ui-sref-active="active" ng-bind="phase.title">Phase title</a>
+        <a class="grid-content" ui-sref="phase({ phaseNumber: phase.phasenumber })" ui-sref-active="active" ng-bind="phase.title">Phase title</a>
     </li>
 </ul>

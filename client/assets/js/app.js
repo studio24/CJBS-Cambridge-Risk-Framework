@@ -5,6 +5,7 @@ var app = angular.module('application', [
     'ngAnimate',
     'ngCookies',
     'ngSanitize',
+    'crfVisualisations',
 
     //foundation
     'foundation',
@@ -54,7 +55,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
 
                 }]
             },
-            url         : '/:projectId',
+            url         : '/project/:projectId',
             views       : {
                 "content": {
                     templateUrl: 'templates/project.html',
@@ -62,7 +63,17 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }
             }
         })
-        .state('project.section', {
+        .state('sectionroot', {
+            url: '/section',
+            parent: 'project',
+            views       : {
+                "content": {
+                    templateUrl: 'templates/section.html',
+                }
+            },
+            abstract: true
+        })
+        .state('section', {
             resolve     : {
                 section: [ '$stateParams', '$filter', 'sections', 'project', function( $stateParams, $filter, sections, project ) {
 
@@ -78,6 +89,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }]
             },
             url: '/:sectionNumber',
+            parent: 'sectionroot',
             views       : {
                 "content": {
                     templateUrl: 'templates/content.html',
@@ -89,7 +101,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }
             }
         })
-        .state('project.section.visualisation', {
+        .state('section.visualisation', {
             resolve     : {
                 visualisation: [ '$stateParams', '$filter', 'ijsRequest', 'section', function( $stateParams, $filter, ijsRequest, section ) {
 
@@ -103,6 +115,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }]
             },
             url: '/:visualisationType',
+            parent: 'section',
             views: {
                 "visualisation": {
                     templateUrl: 'templates/visualisation.html',
@@ -110,7 +123,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }
             }
         })
-        .state('project.section.phase', {
+        .state('phase', {
             resolve     : {
                 phase: [ '$stateParams', '$filter', 'phases', 'section', function( $stateParams, $filter, phases, section ) {
 
@@ -125,15 +138,16 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
 
                 }]
             },
-            url: '/:phaseNumber',
+            url: '/phase/:phaseNumber',
+            parent: 'section',
             views: {
-                "content@project": {
+                "content@sectionroot": {
                     templateUrl: 'templates/content.html',
                     controller: 'crfPhaseController'
                 }
             }
         })
-        .state('project.section.phase.visualisation', {
+        .state('phase.visualisation', {
             resolve     : {
                 visualisation: [ '$stateParams', '$filter', 'ijsRequest', 'phase', function( $stateParams, $filter, ijsRequest, phase ) {
 
@@ -147,8 +161,9 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }]
             },
             url: '/:visualisationType',
+            parent: 'phase',
             views: {
-                "visualisation": {
+                "visualisation@project.sectionroot": {
                     templateUrl: 'templates/visualisation.html',
                     controller: 'crfVisualisationController'
                 }

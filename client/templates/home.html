@@ -1,19 +1,21 @@
 <div class="title-bar">
-    <div class="left title"><a ui-sref="home">Cambridge Risk Assessment</a></div>
+    <div class="left title"><a ui-sref="home">Cambridge Risk Framework</a></div>
 </div>
 <div class="grid-block" ng-if="projects.length > 0">
-    <nav class="grid-content project-navigation" >
-        <ul class="grid-block small-up-2 medium-up-4 large-up-6">
-            <li ng-repeat="project in projects | filter:searchText" class="grid-content">
-                <a class="card project-link" ui-sref="project({ projectId: project.id })">
-                    <img ng-src="{{project.thumbnail_image}}">
-                    <div class="card-divider" ng-bind="project.name">Project title</div>
-                    <div class="card-section" ng-bind="project.description">Project description</div>
-                </a>
-            </li>
-        </ul>
-    </nav>
-    <div id="project-filters" class="fast slideInOut medium-3 large-2 medium-grid-block large-grid-block vertical">
+    <div class="small-12 medium-8 large-10 grid-block">
+        <nav class="grid-content project-navigation" >
+            <ul class="grid-block small-up-1 medium-up-2 large-up-3">
+                <li ng-repeat="project in projects | filter:searchText" class="grid-content">
+                    <a class="project-link" ui-sref="project({ projectId: project.id })">
+                        <img class="project-thumbnail" ng-src="{{project.thumbnail_image}}">
+                        <h2 ng-bind="project.name">Project title</h2>
+                        <p ng-bind="project.description">Project description</p>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div id="project-filters" class="hide-for-small show-for-medium medium-4 large-2 grid-block">
         <div class="grid-content filters">
             <div class="content">
                 <h3>Filter projects</h3>

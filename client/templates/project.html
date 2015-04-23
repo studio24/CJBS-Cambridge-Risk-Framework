@@ -4,7 +4,7 @@
 <nav class="grid-block section-navigation shrink" ng-if="project.sections.length > 0">
     <ul class="grid-content">
         <li ng-repeat="section in project.sections">
-            <a ui-sref="project.section({ sectionNumber: section.sectionnumber })" ui-sref-active="active" ng-bind="section.title">Section title</a>
+            <a ui-sref="section({ sectionNumber: section.sectionnumber })" ui-sref-active="active" ng-bind="section.title">Section title</a>
         </li>
     </ul>
 </nav>
@@ -19,5 +19,4 @@
             <p ng-bind="content.ijs_url"></p>
         </div>
     </div>
-    <nav ui-view="phase-navigation" class="grid-block shrink"></nav>
 </div>

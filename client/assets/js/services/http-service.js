@@ -13,7 +13,7 @@ app.factory('phases', function ( Restangular ) {
 // Restangular service that uses a different URL
 app.factory('IJSRestangular', function(Restangular) {
     return Restangular.withConfig(function(RestangularConfigurer) {
-        RestangularConfigurer.setBaseUrl('http://sybil-api.cambridgeriskframework.com');
+        RestangularConfigurer.setBaseUrl('http://sybil-api.cambridgeriskframework.com').setRequestSuffix('');
     });
 });
 

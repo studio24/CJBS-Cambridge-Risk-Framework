@@ -1,27 +1,18 @@
 <div id="content-container" class="grid-block">
 
     <!-- Main content (chart) panel -->
-    <div class="small-12 medium-8 large-8 grid-content">
-
-        <div class="">
-            <h2 ng-bind="content.title"></h2>
-            <h3 ng-bind="content.subtitle"></h3>
-            <p ng-bind="content.thumbnail_image"></p>
-            <p ng-bind="content.description"></p>
+    <div class="small-12 medium-8 large-8 grid-block">
+        <div ui-view="visualisation" class="grid-block vertical">
+            <crf-visualisation ng-if="content.ijs_url" url="{{content.ijs_url}}"></crf-visualisation>
         </div>
-
-        <div class="ijs-urls" ng-if="content.ijs_urls">
-            <h3>IJS URLs</h3>
+        <div class="ijs-urls visualisation-selector" ng-if="content.ijs_urls">
+            <h3>Select a visualisation</h3>
             <ul>
                 <li ng-repeat="(key, value) in content.ijs_urls">
-                    <a ui-sref="project.section.visualisation({ visualisationType: key })" ng-bind="key">Charts</a>
+                    <a ui-sref="section.visualisation({ visualisationType: key })" ng-bind="key">Charts</a>
                 </li>
             </ul>
         </div>
-        <div ui-view="visualisation" class="grid-block">
-            <p ng-bind="content.ijs_url"></p>
-        </div>
-
     </div>
 
     <!-- Cassandra panel -->
