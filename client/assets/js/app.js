@@ -25,6 +25,11 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
 
     RestangularProvider.setBaseUrl('http://sybil-api.cambridgeriskframework.com/api/')
         .setRequestSuffix('/');
+    RestangularProvider.setResponseExtractor(function(response) {
+        var newResponse = response;
+        newResponse.originalElement = angular.copy(response);
+        return newResponse;
+    });
 
     $stateProvider
         .state('home', {
@@ -64,7 +69,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             }
         })
         .state('sectionroot', {
-            url: '/section',
+            url: '',
             parent: 'project',
             views       : {
                 "content": {
@@ -79,6 +84,10 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
 
                     var sectionNumber = $stateParams.sectionNumber;
 
+                    if ( !sectionNumber ) {
+                        sectionNumber = 1;
+                    }
+
                     // We have the section number, not the ID, so we need to Loop through the sections in the current project to find the appropriate ID.
                     var sectionOverview = $filter('getByAttr')( project.sections, 'sectionnumber', sectionNumber );
 
@@ -88,7 +97,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
 
                 }]
             },
-            url: '/:sectionNumber',
+            url: '/section/:sectionNumber',
             parent: 'sectionroot',
             views       : {
                 "content": {
@@ -108,7 +117,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                     var visualisationType = $stateParams.visualisationType;
 
                     // We have the IJS type, not the URL, so we need to grab the URL from the section object.
-                    var visualisationUrl = section.ijs_urls[visualisationType];
+                    var visualisationUrl = section.visualisations[visualisationType];
 
                     return ijsRequest.get( visualisationUrl );
 
@@ -154,7 +163,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                     var visualisationType = $stateParams.visualisationType;
 
                     // We have the IJS type, not the URL, so we need to grab the URL from the section object.
-                    var visualisationUrl = phase.ijs_urls[visualisationType];
+                    var visualisationUrl = phase.visualisations[visualisationType];
 
                     return ijsRequest.get( visualisationUrl );
 
@@ -163,7 +172,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             url: '/:visualisationType',
             parent: 'phase',
             views: {
-                "visualisation@project.sectionroot": {
+                "visualisation": {
                     templateUrl: 'templates/visualisation.html',
                     controller: 'crfVisualisationController'
                 }

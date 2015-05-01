@@ -40,6 +40,11 @@ var foundationJS = [
     'bower_components/d3/d3.js',
     'bower_components/restangular/dist/restangular.js'
 ];
+// CSS files from libraries and other external sources
+// Currently not used. If this grows, build it into the gulpfile
+var appLibs = [
+    'client/assets/js/libs/leaflet-0.7.2/**/*.*'
+];
 // These files are for your app's JavaScript
 var appJS = [
     'client/assets/js/**/*.js'
@@ -119,7 +124,7 @@ gulp.task('uglify', function() {
   ;
 });
 
-// Copies your app's page templates and generates URLs for them
+// Copies your app's page templates
 gulp.task('copy-templates', ['copy'], function() {
     return gulp.src('./client/templates/**/*.html')
     // Foundation's dynamic routing. Disabled as it's
@@ -129,6 +134,12 @@ gulp.task('copy-templates', ['copy'], function() {
     //  root: 'client'
     //}))
     .pipe(gulp.dest('./build/templates'));
+});
+
+// Copies your app's static libraries
+gulp.task('libs', function() {
+    return gulp.src(appLibs)
+        .pipe(gulp.dest('./build/assets/libs'));
 });
 
 // Starts a test server, which you can view at http://localhost:8080
@@ -145,22 +156,23 @@ gulp.task('server:start', function() {
 
 // Builds your entire app once, without starting a server
 gulp.task('build', function() {
-  sequence('clean', ['copy', 'sass', 'uglify'], 'copy-templates', function() {
-    console.log("Successfully built.");
-  })
+    sequence('clean', ['copy', 'sass', 'uglify'], 'copy-templates', 'libs', function() {
+        console.log("Successfully built.");
+    })
 });
 
 // Default task: builds your app, starts a server, and recompiles assets when they change
 gulp.task('default', ['build'], function() {
-  // Watch Sass
-  gulp.watch(['./client/assets/scss/**/*', './scss/**/*'], ['sass']);
+    // Watch Sass
+    gulp.watch(['./client/assets/scss/**/*', './scss/**/*'], ['sass']);
 
-  // Watch JavaScript
-  gulp.watch(['./client/assets/js/**/*', './js/**/*'], ['uglify']);
+    // Watch JavaScript
+    gulp.watch(['./client/assets/js/**/*', './js/**/*'], ['uglify']);
 
-  // Watch static files
-  gulp.watch(['./client/**/*.*', '!./client/templates/**/*.*', '!./client/assets/{scss,js}/**/*.*'], ['copy']);
+    // Watch static files
+    gulp.watch(['./client/**/*.*', '!./client/templates/**/*.*', '!./client/assets/{scss,js}/**/*.*'], ['copy']);
+    gulp.watch(['./client/assets/css/**/*', './css/**/*'], ['libs']);
 
-  // Watch app templates
-  gulp.watch(['./client/templates/**/*.html'], ['copy-templates']);
+    // Watch app templates
+    gulp.watch(['./client/templates/**/*.html'], ['copy-templates']);
 });
