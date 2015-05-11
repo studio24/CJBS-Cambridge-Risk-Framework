@@ -32,6 +32,7 @@ var foundationJS = [
     'bower_components/angular-ui-router/release/angular-ui-router.js',
     'bower_components/angular-sanitize/angular-sanitize.js',
     'bower_components/angular-cookies/angular-cookies.js',
+    'bower_components/angular-leaflet-directive/dist/angular-leaflet-directive.js',
     'bower_components/foundation-apps/js/vendor/**/*.js',
     'bower_components/foundation-apps/js/angular/**/*.js',
     '!bower_components/foundation-apps/js/angular/app.js',

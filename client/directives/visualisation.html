@@ -3,4 +3,7 @@
     <p ng-bind="visualisation.timestamp"></p>
     <p ng-bind="visualisation.error"></p>
     <p ng-bind="visualisation.version"></p>
+
+    <crf-map ng-if="map" data="visualisationData" class="grid-block"></crf-map>
+
 </div>
