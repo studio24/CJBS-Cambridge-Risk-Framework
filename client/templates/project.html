@@ -1,13 +1,14 @@
-<div class="title-bar">
-    <div class="left title"><a ui-sref="home" ng-bind="project.name">Cambridge Risk Assessment</a></div>
+<div class="grid-block shrink project-title-bar">
+    <div class="grid-block wrap">
+        <div class="grid-block shrink project-title">
+            <img class="project-thumbnail" ng-src="{{project.thumbnail_image}}" width="30" height="30" alt="Thumbnail image"/>
+            <h1 ng-bind="project.name">Project Name</h1>
+        </div>
+        <crs-section-navigation ng-if="project.sections && project.sections.length > 1" sections="project.sections"></crs-section-navigation>
+    </div>
+    <div class="grid-block shrink"><a class="project-exit" ui-sref="home">&#x2715;</a><a class="project-exit" ui-sref="home">&#x2715;</a></div>
 </div>
-<nav class="grid-block section-navigation shrink" ng-if="project.sections.length > 0">
-    <ul class="grid-content">
-        <li ng-repeat="section in project.sections">
-            <a ui-sref="section({ sectionNumber: section.sectionnumber })" ui-sref-active="active" ng-bind="section.title">Section title</a>
-        </li>
-    </ul>
-</nav>
+
 <div id="section-container" class="grid-block vertical">
     <div ui-view="content" class="grid-block vertical">
         <div class="grid-content">

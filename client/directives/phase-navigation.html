@@ -1,0 +1,7 @@
+<nav class="grid-block phase-navigation">
+    <ul class="grid-block" ng-if="phases.length > 0" ng-class="'small-up-' + phases.length">
+        <li class="grid-block" ng-repeat="phase in phases" ng-class="{ highlight: state.params.phaseNumber > $index + 1, last: $index >= phases.length - 1 }">
+            <a class="grid-content" ui-sref="phase({ phaseNumber: phase.phasenumber })" ui-sref-active="active" ng-bind="phase.title">Phase title</a>
+        </li>
+    </ul>
+</nav>

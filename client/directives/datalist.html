@@ -1,0 +1,35 @@
+<div class="datalist grid-block vertical">
+    <div class="filters grid-content shrink">
+        <div>
+            <input type="text" ng-model="search" placeholder="Search" />
+        </div>
+        <div>
+            <h4>Sort by:</h4>
+            <select ng-model="predicate" placeholder="Choose a field">
+                <option></option>
+                <option ng-repeat="header in columnheaders" ng-bind="header.title" ng-if="header.show" ng-value="$index"></option>
+            </select>
+        </div>
+        <div>
+            <a ng-click="toggleSortOrder()" ng-class="{ ascending: ascending }"><span ng-bind="ascending ? 'Ascending' : 'Descending'"></span></a>
+        </div>
+        <div>
+            <h4>Legend:</h4>
+            <select ng-model="search" placeholder="Choose a field">
+                <option></option>
+                <option ng-repeat="entry in styledefinition.nodestyles" ng-bind="entry.legendLabel" ng-value="entry.legendLabel" ng-attr-style="color: {{ entry.fillColor }}"></option>
+            </select>
+        </div>
+    </div>
+    <ul class="grid-content">
+        <li class="entry" ng-repeat="entry in data | filter:search:strict | orderObjectBy: predicate:ascending" ng-class="{ active: entry.id == selected }" ng-click="selectEntry( entry.id )">
+            <ul>
+                <li ng-repeat="field in entry.fields" ng-class="{ primary: columnheaders[$index].title == 'Name'}">
+                    <span ng-if="columnheaders[$index].id == 'name'" ng-attr-style="color: {{ styledefinition.nodestyles[entry.style].fillColor }}" ng-attr-title="{{styledefinition.nodestyles[entry.style].legendLabel}}">// </span>
+                    <span ng-bind="field.v"></span>
+                    <span class="filtered-highlight" ng-if="predicate && columnheaders[predicate].id != 'name' && columnheaders[$index].id == 'name' && entry.id != selected">[<span ng-bind="entry.fields[predicate].v"></span>]</span>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>

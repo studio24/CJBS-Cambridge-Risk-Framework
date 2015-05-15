@@ -1,20 +1,86 @@
-angular.module('crfVisualisations', ["leaflet-directive"])
-    .controller('crfVisualisationDirectiveController', function ( $scope, $element, $window ) {
+angular.module('crsVisualisations', ["leaflet-directive"])
+    .controller('crsVisualisationDirectiveController', function ( $scope, $element, $window ) {
 
+        // Nothing here yet
 
-        // Graph drawing logic goes here
-        $scope.loadGraphs = function($data) {
+    })
+    .controller('crsDatalistDirectiveController', function ( $scope, $element, $window ) {
 
-            S24.Charts.createForceDirectedGraph('#visualisation', $data.graph1, {
-                width: '100%',
-                height: 1000
-            }, $scope);
-
-            angular.element($window).bind('resize', function () {
-                // Resize
-            });
-
+        $scope.selectEntry = function ( entryId ) {
+            $scope.selected = entryId;
         };
+
+        $scope.toggleSortOrder = function (){
+            $scope.ascending = !$scope.ascending;
+        };
+
+        $scope.loadDatalist = function ( data ) {
+
+            for (var key in data) {
+                if (data.hasOwnProperty(key)) {
+
+                    var datalist = data[key].nodeattributes;
+
+                    var iterator = 0;
+                    for ( var key in datalist.columnlist ) {
+                        if ( datalist.columnlist.hasOwnProperty(key) ) {
+
+                            if ( datalist.columnlist[key].show && !$scope.visibleField) {
+                                $scope.visibleField = iterator;
+                            }
+                            iterator++;
+                        }
+                    }
+
+
+                    var data = [];
+                    //for ( i = 0; i < datalist.data.length; i++ ) {
+
+                    var filters = [];
+
+                    for (var key in datalist.data) {
+                        if (datalist.data.hasOwnProperty(key)) {
+
+                            var entry = datalist.data[key];
+
+                            entry.id = key;
+
+                            for ( ii = 0; ii < entry.fields.length; ii++ ) {
+
+                                //var columnheader = columnlist[ii];
+
+                                //if ( datalist.styledefinition.nodestyles[entry.style].legendLabel == entry.fields[ii] ) {
+                                //    filters
+                                //};
+
+                                //entry.fields[ columnheader.id ] = entry.fields[ii];
+                                //delete entry.fields[ii];
+                                //entry.styles = columnheader.style;
+
+                            }
+
+                            data.push(entry);
+
+                        }
+                    }
+
+                    angular.extend($scope, {
+                        data: data,
+                        columnheaders: datalist.columnarray,
+                        styledefinition: datalist.styledefinition
+                    });
+
+                    console.log($scope);
+
+                }
+            }
+        };
+
+        $scope.loadDatalist( $scope.layerData );
+
+
+    })
+    .controller('crsChartDirectiveController', function ( $scope, $element, $window ) {
 
         // Chart drawing logic goes here
         $scope.loadCharts = function(data) {
@@ -79,11 +145,15 @@ angular.module('crfVisualisations', ["leaflet-directive"])
 
                         }
 
-                        drawChart( chartData, chartOptions, containerDiv )
-
                         angular.element($window).bind('resize', function () {
-                            drawChart( chartData, chartOptions, containerDiv )
+                            drawChart( chartData, chartOptions, containerDiv );
                         });
+
+                        angular.element(document).ready(function () {
+                            drawChart( chartData, chartOptions, containerDiv );
+                        });
+
+
 
                     }
 
@@ -91,25 +161,29 @@ angular.module('crfVisualisations', ["leaflet-directive"])
             }
         };
 
+        $scope.loadCharts( $scope.chartData );
 
-
-        switch ( $scope.visualisationType ) {
-
-            case 'charts' :
-                $scope.loadCharts( $scope.visualisationData );
-                break;
-
-            case 'graphs' :
-                $scope.loadGraphs( $scope.visualisationData );
-                break;
-
-            case 'maps' :
-                $scope.map = true;
-                break;
-
-        }
     })
-    .controller('crfMapDirectiveController', [ "$scope", "leafletData", "leafletBoundsHelpers", function ( $scope, leafletData, leafletBoundsHelpers ) {
+    .controller('crsGraphDirectiveController', function ( $scope, $element, $window ) {
+
+        // Graph drawing logic goes here
+        $scope.loadGraphs = function($data) {
+
+            S24.Charts.createForceDirectedGraph('#visualisation', $data.graph1, {
+                width: '100%',
+                height: 1000
+            }, $scope);
+
+            angular.element($window).bind('resize', function () {
+                // Resize
+            });
+
+        };
+
+        $scope.loadGraphs( $scope.graphData );
+
+    })
+    .controller('crsMapDirectiveController', [ "$scope", "leafletData", "leafletBoundsHelpers", function ( $scope, leafletData, leafletBoundsHelpers ) {
         // Chart drawing logic goes in here
         $scope.loadMaps = function(data) {
             // D3
@@ -209,12 +283,116 @@ angular.module('crfVisualisations', ["leaflet-directive"])
                         }
                     }
 
+                    // Primary layers
+
+                    var geojson = {};
+
+                    // Fix format of layers to match the Leaflet directive
+                    for ( var primarylayer in mapObject.primarylayers ) {
+
+                        if ( mapObject.primarylayers.hasOwnProperty(primarylayer) ) {
+
+                            var thisPrimaryLayer = mapObject.primarylayers[primarylayer];
+
+                            if ( typeof(thisPrimaryLayer.geojson) != 'undefined' ) {
+
+                                if ( typeof(thisPrimaryLayer.geojson.features) != 'undefined' ) {
+
+                                    var layerName = 'geojson' + primarylayer;
+
+                                    // Assign each feature to a layer
+                                    for ( i = 0; i < thisPrimaryLayer.geojson.features.length; i++ ) {
+                                        thisPrimaryLayer.geojson.features[i].layer = layerName;
+                                    }
+
+                                    thisPrimaryLayer.geojson.layer = layerName;
+
+                                    var thisGeoJSON = {
+                                        data: thisPrimaryLayer.geojson,
+                                        style: function (feature) {
+
+                                            // Check what kind of shape this is
+                                            if ( typeof(feature.properties.nodestyle) != 'undefined' ) {
+
+                                                // Apply node styles
+                                                var styles = mapObject.styledefinition.nodestyles[feature.properties.nodestyle] || {};
+                                                styles.opacity = 1;
+                                                styles.fillOpacity = 1;
+                                                styles.stroke = 0;
+
+                                                return styles;
+
+                                            } else if ( typeof(feature.properties.linkstyle) != 'undefined' ) {
+
+                                                // Apply link styles
+                                                var styles = mapObject.styledefinition.linkstyles[feature.properties.linkstyle] || {};
+                                                styles.opacity = 0.2;
+                                                styles.weight = 1;
+
+                                                return styles;
+
+                                            }
+
+                                        },
+                                        pointToLayer: function (feature, latlng) {
+
+                                            marker = new L.CircleMarker(latlng, {radius: feature.properties.size * 3, fillOpacity: 0.85});
+
+                                            feature.layer = layerName;
+
+                                            if (feature.properties.title !== undefined) {
+                                                marker.bindLabel('<span style="color:' + newProperties.titleColor + '">' + feature.properties.title + '</span>', { noHide: true });
+                                            }
+
+                                            marker.on('click', function(e) {
+
+                                                feature.properties.hide = true;
+
+                                            });
+
+                                            return marker;
+
+                                        },
+                                        layer: layerName,
+                                        type: 'geoJSON',
+                                        filter: function (feature) {
+                                            if ( feature.properties.hide ) {
+                                                return false;
+                                            } else {
+                                                var layerName = feature.layer;
+
+                                                if ( typeof(layerName) != 'undefined' ) {
+                                                    var associatedLayer = $scope.layers.overlays[layerName];
+                                                    if ( typeof(associatedLayer) != 'undefined' ) {
+                                                        return associatedLayer.visible;
+                                                    }
+                                                }
+                                                return true;
+                                            }
+                                        }
+                                    };
+                                    geojson[layerName] = thisGeoJSON;
+
+                                    overlays[layerName] = {
+                                        name: thisPrimaryLayer.title,
+                                        type: 'group',
+                                        visible: true
+                                    };
+                                    overlays.count++;
+                                }
+                            }
+                        }
+                    }
+                    angular.extend($scope, {
+                        geojson : geojson
+                    });
 
 
-                    // Overlay layers
 
 
 
+
+                    // Overlay WMS layers
                     if ( overlays.count > 0 ) {
                         // Add overlays to the scope
                         angular.extend($scope.layers, {
@@ -222,92 +400,35 @@ angular.module('crfVisualisations', ["leaflet-directive"])
                         });
                     }
 
-                    // Overlay layers
-                    var overlayLayers = {};
 
-                    leafletData.getMap('map').then(function(map) {
 
-                        $scope.map = map;
 
-                        // Fix format of primary layers to match the Leaflet directive
-                        for ( var primarylayer in mapObject.primarylayers ) {
-
-                            if ( mapObject.primarylayers.hasOwnProperty(primarylayer) ) {
-
-                                var layer = L.geoJson();
-
-                                var thisPrimaryLayer = mapObject.primarylayers[primarylayer];
-
-                                thisPrimaryLayer.geojson.features.forEach(function(feature) {
-                                    var newProperties;
-
-                                    // Check if the feature is a node, or a link
-                                    if (typeof(feature.properties.nodestyle) != 'undefined') {
-                                        newProperties = mapObject.styledefinition.nodestyles[feature.properties.nodestyle] || {};
-                                        newProperties.opacity = 1;
-                                        newProperties.fillOpacity = 1;
-                                        newProperties.stroke = 0;
-
-                                        // Add the feature to the map
-                                        var marker;
-                                        var guid = feature.id;
-                                        L.geoJson(feature, {
-                                            style: newProperties,
-                                            pointToLayer: function(feature, latlng) {
-                                                marker = new L.CircleMarker(latlng, {radius: feature.properties.size * 3, fillOpacity: 0.85});
-                                                marker._id = 'guid' + guid;
-                                                marker.on('click', function(e) {
-                                                    var markerId = e.target._id;
-                                                    $scope.$apply(function() {
-                                                        $scope.toggleCompanyById(markerId);
-                                                    });
-                                                });
-                                                $scope.allMapMarkers = $scope.allMapMarkers || [];
-                                                $scope.allMapMarkers.push(marker);
-                                                if (feature.properties.title !== undefined) {
-                                                    marker.bindLabel('<span style="color:' + newProperties.titleColor + '">' + feature.properties.title + '</span>', { noHide: true });
-                                                }
-                                                return marker;
-                                            }
-                                        }).addTo(layer);
-                                    } else {
-                                        newProperties = mapObject.styledefinition.linkstyles[feature.properties.linkstyle] || {};
-                                        newProperties.opacity = 0.2;
-                                        newProperties.weight = 1;
-                                        // Add the feature to the map
-                                        L.geoJson(feature, {
-                                            style: newProperties
-                                        }).addTo(layer);
-                                    }
-
-                                });
-
-                                var nodesLayer = L.layerGroup([layer]).addTo($scope.map);
-
-                                // Add layer controls
-                                overlayLayers[primarylayer.title] = nodesLayer;
-                            }
-                        }
-
-                        //// Add layer controls
-                        //L.control.layers(overlayLayers).addTo($scope.map);
+                    leafletData.getMap().then(function(map) {
+                        //Access the map object
 
                     });
 
+                    $scope.$on("leafletDirectiveMap.geojsonMouseover", function(ev, feature, leafletEvent) {
+                        var layer = leafletEvent.target;
+                        console.log(feature.id + ' hovered');
+                    });
 
-
-
+                    $scope.$on("leafletDirectiveMap.geojsonClick", function(ev, feature, leafletEvent) {
+                        var layer = leafletEvent.target;
+                        layer.bringToFront();
+                        console.log(feature.id + ' clicked', feature);
+                    });
 
                 }
             }
         };
 
+        $scope.loadMaps( $scope.mapData );
 
 
-        $scope.loadMaps( $scope.data );
 
     }])
-    .directive('crfVisualisation', function() {
+    .directive('crsVisualisation', function() {
         return {
             restrict: 'AE',
             replace: true,
@@ -316,29 +437,48 @@ angular.module('crfVisualisations', ["leaflet-directive"])
                 visualisationData: '=',
                 visualisationType: '='
             },
-            controller: 'crfVisualisationDirectiveController'
+            controller: 'crsVisualisationDirectiveController'
         };
     })
-    .directive('crfMap', function() {
+    .directive('crsDatalist', function() {
+        return {
+            restrict: 'AE',
+            replace: true,
+            templateUrl: 'directives/datalist.html',
+            scope: {
+                layerData: '='
+            },
+            controller: 'crsDatalistDirectiveController'
+        };
+    })
+    .directive('crsMap', function() {
         return {
             restrict: 'AE',
             templateUrl: 'directives/map.html',
             scope: {
-                data: '='
+                mapData: '='
             },
-            controller: 'crfMapDirectiveController'
+            controller: 'crsMapDirectiveController'
         };
     })
-    .directive('crfVisualisationLayers', function() {
+    .directive('crsGraph', function() {
         return {
             restrict: 'AE',
-            replace: true,
-            templateUrl: 'directives/visualisation.html',
+            templateUrl: 'directives/graph.html',
             scope: {
-                visualisationData: '=',
-                visualisationType: '='
+                graphData: '='
             },
-            controller: 'crfVisualisationDirectiveController'
+            controller: 'crsGraphDirectiveController'
+        };
+    })
+    .directive('crsChart', function() {
+        return {
+            restrict: 'AE',
+            templateUrl: 'directives/chart.html',
+            scope: {
+                chartData: '='
+            },
+            controller: 'crsChartDirectiveController'
         };
     });
 

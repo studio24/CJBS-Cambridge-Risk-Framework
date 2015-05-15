@@ -1,0 +1,24 @@
+<nav class="grid-block section-navigation">
+    <div class="section-dropdown grid-block shrink">
+        <ui-select ng-model="state.params.sectionNumber" on-select="goToSection($select.selected.sectionnumber)" search-enabled="{{sections.length > 9}}">
+            <ui-select-match placeholder="Select a section">Section: <span class="selected-section" ng-bind="sections[$select.selected.sectionnumber-1].title"></span></ui-select-match>
+            <ui-select-choices repeat="section.sectionnumber as section in sections | filter: $select.search track by $index">
+                <div ng-bind-html="section.title | highlight: $select.search"></div>
+            </ui-select-choices>
+        </ui-select>
+        <div class="prev-link">
+            <a ng-class="{ disabled: !prevSection() }" ng-click="goToSection(prevSection())">Previous</a>
+        </div>
+        <div class="next-link">
+            <a ng-class="{ disabled: !nextSection() }"  ng-click="goToSection(nextSection())">Next</a>
+        </div>
+    </div>
+
+    <!--TODO: Use this version for large displays-->
+    <!--<div class="current-section-indicator"></div>-->
+    <!--<ul class="section-list">-->
+        <!--<li ng-repeat="section in sections" ui-sref-active="active">-->
+            <!--<a ui-sref="section({ sectionNumber: section.sectionnumber })" ng-bind="section.title">Section title</a>-->
+        <!--</li>-->
+    <!--</ul>-->
+</nav>

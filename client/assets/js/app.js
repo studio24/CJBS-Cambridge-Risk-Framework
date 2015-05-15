@@ -5,7 +5,9 @@ var app = angular.module('application', [
     'ngAnimate',
     'ngCookies',
     'ngSanitize',
-    'crfVisualisations',
+    'crsVisualisations',
+    'crsNavigation',
+    'ui.select',
 
     //foundation
     'foundation',
@@ -19,9 +21,13 @@ var app = angular.module('application', [
 app.$inject = ['FoundationApi'];
 app.$inject = ['Hammer'];
 
-config.$inject = ['$urlRouterProvider', '$locationProvider', '$stateProvider', 'RestangularProvider'];
+config.$inject = ['$urlRouterProvider', '$locationProvider', '$stateProvider', 'RestangularProvider', 'uiSelectConfig'];
 
-function config($urlProvider, $locationProvider, $stateProvider, RestangularProvider) {
+function config($urlProvider, $locationProvider, $stateProvider, RestangularProvider, uiSelectConfig) {
+
+    uiSelectConfig.theme = 'select2';
+    uiSelectConfig.resetSearchInput = true;
+    uiSelectConfig.appendToBody = true;
 
     RestangularProvider.setBaseUrl('http://sybil-api.cambridgeriskframework.com/api/')
         .setRequestSuffix('/');
@@ -45,7 +51,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             views       : {
                 "content": {
                     templateUrl: 'templates/home.html',
-                    controller: 'crfProjectListController'
+                    controller: 'crsProjectListController'
                 }
             }
         })
@@ -64,7 +70,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             views       : {
                 "content": {
                     templateUrl: 'templates/project.html',
-                    controller: 'crfProjectController'
+                    controller: 'crsProjectController'
                 }
             }
         })
@@ -102,11 +108,11 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             views       : {
                 "content": {
                     templateUrl: 'templates/content.html',
-                    controller: 'crfSectionController'
+                    controller: 'crsSectionController'
                 },
                 "phase-navigation": {
                     templateUrl: 'templates/phase-navigation.html',
-                    controller: 'crfSectionController'
+                    controller: 'crsSectionController'
                 }
             }
         })
@@ -128,7 +134,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             views: {
                 "visualisation": {
                     templateUrl: 'templates/visualisation.html',
-                    controller: 'crfVisualisationController'
+                    controller: 'crsVisualisationController'
                 }
             }
         })
@@ -152,7 +158,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             views: {
                 "content@sectionroot": {
                     templateUrl: 'templates/content.html',
-                    controller: 'crfPhaseController'
+                    controller: 'crsPhaseController'
                 }
             }
         })
@@ -174,7 +180,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             views: {
                 "visualisation": {
                     templateUrl: 'templates/visualisation.html',
-                    controller: 'crfVisualisationController'
+                    controller: 'crsVisualisationController'
                 }
             }
         })

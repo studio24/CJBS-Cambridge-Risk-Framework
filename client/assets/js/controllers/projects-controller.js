@@ -1,4 +1,4 @@
-app.controller('crfProjectListController', function ( $scope, projectList ) {
+app.controller('crsProjectListController', function ( $scope, projectList ) {
 
     $scope.projects = projectList;
     console.log( 'Projects added to scope:', $scope.projects );
@@ -7,7 +7,7 @@ app.controller('crfProjectListController', function ( $scope, projectList ) {
 
 });
 
-app.controller('crfProjectController', ['FoundationApi', '$scope', 'project', '$state', '$stateParams', function(FoundationApi, $scope, project, $state, $stateParams) {
+app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', '$state', '$stateParams', function(FoundationApi, $scope, project, $state, $stateParams) {
 
     $scope.project = project;
     console.log( 'Project added to scope:', $scope.project );
@@ -35,7 +35,7 @@ app.controller('crfProjectController', ['FoundationApi', '$scope', 'project', '$
 
 }]);
 
-app.controller('crfSectionController', function ( $scope, section, $state ) {
+app.controller('crsSectionController', function ( $scope, section, $state ) {
 
     $scope.section = section;
     console.log( 'Section added to scope:', $scope.section );
@@ -75,7 +75,7 @@ app.controller('crfSectionController', function ( $scope, section, $state ) {
 
 });
 
-app.controller('crfPhaseController', function ( $scope, phase, $state ) {
+app.controller('crsPhaseController', function ( $scope, phase, $state ) {
 
     $scope.phase = phase;
     console.log( 'Phase added to scope:', $scope.phase );
@@ -106,7 +106,7 @@ app.controller('crfPhaseController', function ( $scope, phase, $state ) {
 
 });
 
-app.controller('crfVisualisationController', function ( $scope, $stateParams, visualisation ) {
+app.controller('crsVisualisationController', function ( $scope, $stateParams, visualisation ) {
 
     $scope.visualisation = {
         visualisationData   :   visualisation.originalElement,

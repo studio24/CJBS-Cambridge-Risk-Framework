@@ -1,9 +1,7 @@
-<div class="visualisation grid-block" id="visualisation">
-    <h2 ng-bind="visualisation.comment"></h2>
-    <p ng-bind="visualisation.timestamp"></p>
-    <p ng-bind="visualisation.error"></p>
-    <p ng-bind="visualisation.version"></p>
-
-    <crf-map ng-if="map" data="visualisationData" class="grid-block"></crf-map>
-
+<div class="visualisation grid-block" id="visualisation-container">
+    <div class="grid-block shrink" id="layers-container" ui-view="secondary"></div>
+    <crs-datalist ng-if="visualisationType == 'layers'" layer-data="visualisationData" class="grid-block"></crs-datalist>
+    <crs-map ng-if="visualisationType == 'maps'" map-data="visualisationData" class="grid-block"></crs-map>
+    <crs-graph ng-if="visualisationType == 'graphs'" graph-data="visualisationData" class="grid-block"></crs-graph>
+    <crs-chart ng-if="visualisationType == 'charts'" chart-data="visualisationData" class="grid-block"></crs-chart>
 </div>

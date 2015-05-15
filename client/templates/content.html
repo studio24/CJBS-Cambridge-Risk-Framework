@@ -1,21 +1,23 @@
 <div id="content-container" class="grid-block">
 
     <!-- Main content (chart) panel -->
-    <div class="small-12 medium-8 large-8 grid-block visualisation-container" >
-        <div ui-view="visualisation" class="grid-block small-12 visualisation-view"></div>
-        <div class="ijs-urls visualisation-selector" ng-if="content.visualisations">
-            <h3>Select a visualisation</h3>
-            <ul>
-                <li ng-repeat="(key, value) in content.visualisations">
-                    <a ui-sref="section.visualisation({ visualisationType: key })" ng-bind="key">Charts</a>
+    <div class="small-12 medium-8 large-8 grid-block vertical visualisation-container">
+        <div class="grid-block shrink visualisation-selector" ng-if="content.visualisations && content.visualisations.length > 1">
+            <h4 class="grid-block shrink visualisation-selector-label">Visualisations:</h4>
+            <ul class="grid-block">
+                <li ng-repeat="(key, value) in content.visualisations" class="grid-block shrink">
+                    <a ui-sref="section.visualisation({ visualisationType: key })">
+                        <img ng-src="{{'/assets/img/' + key + '.svg'}}" ng-alt="{{key}}" ng-title="key"/>
+                    </a>
                 </li>
             </ul>
         </div>
+        <div ui-view="visualisation" class="grid-block visualisation-view"></div>
     </div>
 
     <!-- Info panel -->
-    <div ng-if="content.infopanel" id="cassandra" class="medium-4 large-4 medium-grid-block large-grid-block">
-        <div class="grid-content cassandra">
+    <div ng-if="content.infopanel" id="info-panel" class="medium-4 large-4 medium-grid-block large-grid-block">
+        <div class="grid-content info-panel">
             <h2 ng-bind="content.infopanel.headline">Headline</h2>
             <img ng-if="content.infopanel.imageid" ng-src="contant.cassandraimageid" alt=""/>
             <h3 ng-bind="content.infopanel.subtitle">Subtitle</h3>
