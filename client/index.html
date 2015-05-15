@@ -28,9 +28,7 @@
     <script src="/assets/js/directives/navigation-directive.js"></script>
 </head>
 <body ng-class="state.bodyClass">
-    <div class="grid-frame">
-        <div id="root-container" ui-view="content" class="grid-block vertical"></div>
-    </div>
+    <div class="grid-frame" ui-view="content"></div>
     <zf-notification-set id="main-notifications" position="top-right"></zf-notification-set>
     <zf-modal id="main-modal">
         <aside class="modal">

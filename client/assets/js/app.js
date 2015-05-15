@@ -8,6 +8,7 @@ var app = angular.module('application', [
     'crsVisualisations',
     'crsNavigation',
     'ui.select',
+    'FBAngular',
 
     //foundation
     'foundation',
@@ -38,6 +39,16 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
     });
 
     $stateProvider
+        .state('root', {
+            url: '',
+            abstract: true,
+            views       : {
+                "content": {
+                    templateUrl: 'templates/root.html',
+                    controller: 'crsRootController'
+                }
+            }
+        })
         .state('home', {
             resolve     : {
                 projectList: [ 'projects', function( projects ) {
@@ -48,6 +59,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }]
             },
             url: '/',
+            parent      : 'root',
             views       : {
                 "content": {
                     templateUrl: 'templates/home.html',
@@ -67,6 +79,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }]
             },
             url         : '/project/:projectId',
+            parent      : 'root',
             views       : {
                 "content": {
                     templateUrl: 'templates/project.html',

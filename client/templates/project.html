@@ -6,7 +6,13 @@
         </div>
         <crs-section-navigation ng-if="project.sections && project.sections.length > 1" sections="project.sections"></crs-section-navigation>
     </div>
-    <div class="grid-block shrink"><a class="project-exit" ui-sref="home">&#x2715;</a><a class="project-exit" ui-sref="home">&#x2715;</a></div>
+    <div class="grid-block shrink">
+        <a class="project-control project-fullscreen" ng-click="goFullscreen()">
+            <i ng-show="!fullscreen" class="fa fa-expand"></i>
+            <i ng-show="fullscreen" class="fa fa-compress"></i>
+        </a>
+        <a class="project-control project-exit" ui-sref="home">&#x2715;</a>
+    </div>
 </div>
 
 <div id="section-container" class="grid-block vertical">

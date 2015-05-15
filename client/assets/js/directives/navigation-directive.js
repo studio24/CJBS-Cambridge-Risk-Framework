@@ -54,6 +54,34 @@ angular.module('crsNavigation', [])
         console.log('Phase navigation scope: ',$scope);
         $scope.state = $state;
 
+        $scope.goToPhase = function ( selectedPhase ) {
+            console.log('Phase selected:', selectedPhase);
+
+            if ( selectedPhase <= $scope.phases.length && selectedPhase > 0 ) {
+                $state.go('phase', {
+                    'phaseNumber': selectedPhase
+                });
+            }
+        };
+
+        $scope.nextPhase = function () {
+            var nextPhase = parseInt($state.params.phaseNumber) + 1;
+            if ( nextPhase <= $scope.phases.length ) {
+                return nextPhase;
+            } else {
+                return false;
+            }
+        };
+
+        $scope.prevPhase = function () {
+            var prevPhase = parseInt($state.params.phaseNumber) - 1;
+            if ( prevPhase > 0 ) {
+                return prevPhase;
+            } else {
+                return false;
+            }
+        };
+
 
     })
     .directive('crsPhaseNavigation', function() {

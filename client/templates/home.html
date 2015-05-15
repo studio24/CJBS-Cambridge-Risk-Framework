@@ -2,7 +2,12 @@
     <div class="grid-block project-title">
         <h1>Cambridge Risk Framework</h1>
     </div>
-    <div class="grid-block shrink">About</div>
+    <div class="grid-block shrink">
+        <a class="project-control project-fullscreen" ng-click="goFullscreen()">
+            <i ng-show="!fullscreen" class="fa fa-expand"></i>
+            <i ng-show="fullscreen" class="fa fa-compress"></i>
+        </a>
+    </div>
 </div>
 <div class="grid-block" ng-if="projects.length > 0">
     <div class="small-12 medium-8 large-10 grid-block">

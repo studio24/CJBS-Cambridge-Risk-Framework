@@ -178,6 +178,10 @@ angular.module('crsVisualisations', ["leaflet-directive"])
                 // Resize
             });
 
+            angular.element(document).ready(function () {
+                drawChart( chartData, chartOptions, containerDiv );
+            });
+
         };
 
         $scope.loadGraphs( $scope.graphData );

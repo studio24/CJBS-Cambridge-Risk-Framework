@@ -41,7 +41,8 @@ var foundationJS = [
     'bower_components/lodash/lodash.js',
     'bower_components/d3/d3.js',
     'bower_components/restangular/dist/restangular.js',
-    'bower_components/angular-ui-select/dist/select.js'
+    'bower_components/angular-ui-select/dist/select.js',
+    'bower_components/angular-fullscreen/src/angular-fullscreen.js'
 ];
 // CSS files from libraries and other external sources
 // Currently not used. If this grows, build it into the gulpfile

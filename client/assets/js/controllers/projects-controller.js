@@ -1,11 +1,38 @@
-app.controller('crsProjectListController', function ( $scope, projectList ) {
+app.controller('crsRootController', ['$scope', 'Fullscreen', function ( $scope, Fullscreen ) {
+
+    $scope.goFullscreen = function () {
+
+        if ( Fullscreen.isEnabled() ) {
+
+            Fullscreen.cancel();
+
+        } else {
+
+            Fullscreen.all();
+
+        }
+    };
+
+    // Listen for changes to fullscreen mode
+    Fullscreen.$on('FBFullscreen.change', function(){
+
+        // Update fullscreen parameter on scope so that the icon can be updated
+        $scope.$apply(function() {
+            $scope.fullscreen = Fullscreen.isEnabled();
+        });
+
+    });
+
+}]);
+
+app.controller('crsProjectListController', ['$scope', 'projectList', function ( $scope, projectList ) {
 
     $scope.projects = projectList;
     console.log( 'Projects added to scope:', $scope.projects );
 
     $scope.searchText = '';
 
-});
+}]);
 
 app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', '$state', '$stateParams', function(FoundationApi, $scope, project, $state, $stateParams) {
 
@@ -15,7 +42,7 @@ app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', '$
     // If this level has content, it needs to be displayed so add it to the scope. Child levels will overwrite the content when called
     $scope.content = project;
 
-    console.log($stateParams);
+
 
     var parentState = 'project',
         defaultChildState = 'section';

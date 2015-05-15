@@ -1,7 +1,14 @@
 <nav class="grid-block phase-navigation">
-    <ul class="grid-block" ng-if="phases.length > 0" ng-class="'small-up-' + phases.length">
-        <li class="grid-block" ng-repeat="phase in phases" ng-class="{ highlight: state.params.phaseNumber > $index + 1, last: $index >= phases.length - 1 }">
-            <a class="grid-content" ui-sref="phase({ phaseNumber: phase.phasenumber })" ui-sref-active="active" ng-bind="phase.title">Phase title</a>
-        </li>
-    </ul>
+    <div class="grid-block" ng-if="phases.length > 0">
+        <div class="grid-block shrink phase-controls">
+            <a class="phase-control prev-phase" ng-class="{ disabled: !prevPhase() }" ng-click="goToPhase(prevPhase())" ><i class="fa fa-angle-double-left"></i></a>
+            <a class="phase-control play-phases"><i class="fa fa-play"></i></a>
+            <a class="phase-control next-phase" ng-class="{ disabled: !nextPhase() }" ng-click="goToPhase(nextPhase())" ><i class="fa fa-angle-double-right"></i></a>
+        </div>
+        <ul class="grid-block" ng-class="'small-up-' + phases.length">
+            <li class="grid-block" ng-repeat="phase in phases" ng-class="{ highlight: state.params.phaseNumber > $index + 1, last: $index >= phases.length - 1 }">
+                <a class="grid-content" ui-sref="phase({ phaseNumber: phase.phasenumber })" ui-sref-active="active" ng-bind="phase.title">Phase title</a>
+            </li>
+        </ul>
+    </div>
 </nav>

@@ -29,7 +29,8 @@
   "devDependencies": {
     "angular-leaflet-directive": "~0.7.15",
     "angular-ui-select": "~0.11.2",
-    "select2": "~3.4.5"
+    "select2": "~3.4.5",
+    "angular-fullscreen": "~1.0.1"
   },
   "resolutions": {
     "angular": "~1.3.4"
