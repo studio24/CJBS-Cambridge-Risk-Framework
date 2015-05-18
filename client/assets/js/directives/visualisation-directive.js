@@ -1,42 +1,70 @@
-angular.module('crsVisualisations', ["leaflet-directive"])
-    .controller('crsVisualisationDirectiveController', function ( $scope, $element, $window ) {
+'use strict';
 
-        // Nothing here yet
+var crsVisualisations = angular.module('crsVisualisations', [
+        'leaflet-directive',
+        'restangular'
+    ]);
+
+crsVisualisations
+    .factory('IJSRestangular', function(Restangular) {
+        return Restangular.withConfig(function(RestangularConfigurer) {
+            RestangularConfigurer.setBaseUrl('http://sybil-api.cambridgeriskframework.com').setRequestSuffix('');
+        });
+    })
+    .factory('ijsRequest', function ( IJSRestangular ) {
+        return IJSRestangular.all('');
+    })
+    .controller('crsVisualisationDirectiveController', function ( $scope, $element, $window, ijsRequest ) {
+
+        ijsRequest.get( $scope.visualisationUrl ).then(function(_data){
+            $scope.visualisationData = _data.originalElement;
+            $scope.visualisationDataLoaded = true;
+        });
 
     })
     .controller('crsDatalistDirectiveController', function ( $scope, $element, $window ) {
 
+        $scope.filters = {
+            order       :   null,
+            search      :   '',
+            ascending   :   false,
+            selected    :   null
+        };
+
+        $scope.log = function (selected) {
+            console.log(selected);
+        };
+
         $scope.selectEntry = function ( entryId ) {
-            $scope.selected = entryId;
+            $scope.filters.selected = entryId;
         };
 
         $scope.toggleSortOrder = function (){
-            $scope.ascending = !$scope.ascending;
+            $scope.filters.ascending = !$scope.filters.ascending;
         };
 
-        $scope.loadDatalist = function ( data ) {
 
-            for (var key in data) {
-                if (data.hasOwnProperty(key)) {
 
-                    var datalist = data[key].nodeattributes;
+        $scope.loadDatalist = function ( _data ) {
 
-                    var iterator = 0;
-                    for ( var key in datalist.columnlist ) {
-                        if ( datalist.columnlist.hasOwnProperty(key) ) {
 
-                            if ( datalist.columnlist[key].show && !$scope.visibleField) {
-                                $scope.visibleField = iterator;
-                            }
-                            iterator++;
-                        }
+            var originalData = _data;
+
+            for (var key in originalData) {
+                if (originalData.hasOwnProperty(key)) {
+
+                    var datalist = originalData[key].nodeattributes;
+
+                    for ( var i = 0; i < datalist.columnarray.length; i++ ) {
+
+                        // Give each header an index so that it can be accessed directly by UI-select
+                        datalist.columnarray[i].index = i;
+
                     }
 
-
+                    // Turn data list into an array
                     var data = [];
                     //for ( i = 0; i < datalist.data.length; i++ ) {
-
-                    var filters = [];
 
                     for (var key in datalist.data) {
                         if (datalist.data.hasOwnProperty(key)) {
@@ -45,29 +73,32 @@ angular.module('crsVisualisations', ["leaflet-directive"])
 
                             entry.id = key;
 
-                            for ( ii = 0; ii < entry.fields.length; ii++ ) {
-
-                                //var columnheader = columnlist[ii];
-
-                                //if ( datalist.styledefinition.nodestyles[entry.style].legendLabel == entry.fields[ii] ) {
-                                //    filters
-                                //};
-
-                                //entry.fields[ columnheader.id ] = entry.fields[ii];
-                                //delete entry.fields[ii];
-                                //entry.styles = columnheader.style;
-
-                            }
-
                             data.push(entry);
 
                         }
                     }
 
+                    // Turn style definitions into an array for the legend select dropdown
+                    var legend = [];
+                    //for ( i = 0; i < datalist.data.length; i++ ) {
+
+                    for (var key in datalist.styledefinition.nodestyles) {
+                        if (datalist.styledefinition.nodestyles.hasOwnProperty(key)) {
+
+                            var style = datalist.styledefinition.nodestyles[key];
+
+                            style.id = key;
+
+                            legend.push(style);
+
+                        }
+                    }
+
                     angular.extend($scope, {
-                        data: data,
-                        columnheaders: datalist.columnarray,
-                        styledefinition: datalist.styledefinition
+                        data            : data,
+                        legend          : legend,
+                        columnheaders   : datalist.columnarray,
+                        styledefinition : datalist.styledefinition
                     });
 
                     console.log($scope);
@@ -76,8 +107,7 @@ angular.module('crsVisualisations', ["leaflet-directive"])
             }
         };
 
-        $scope.loadDatalist( $scope.layerData );
-
+        $scope.loadDatalist($scope.layerData);
 
     })
     .controller('crsChartDirectiveController', function ( $scope, $element, $window ) {
@@ -161,7 +191,7 @@ angular.module('crsVisualisations', ["leaflet-directive"])
             }
         };
 
-        $scope.loadCharts( $scope.chartData );
+        $scope.loadCharts($scope.chartData);
 
     })
     .controller('crsGraphDirectiveController', function ( $scope, $element, $window ) {
@@ -179,12 +209,12 @@ angular.module('crsVisualisations', ["leaflet-directive"])
             });
 
             angular.element(document).ready(function () {
-                drawChart( chartData, chartOptions, containerDiv );
+                // Resize
             });
 
         };
 
-        $scope.loadGraphs( $scope.graphData );
+        $scope.loadGraphs($scope.graphData);
 
     })
     .controller('crsMapDirectiveController', [ "$scope", "leafletData", "leafletBoundsHelpers", function ( $scope, leafletData, leafletBoundsHelpers ) {
@@ -305,7 +335,7 @@ angular.module('crsVisualisations', ["leaflet-directive"])
                                     var layerName = 'geojson' + primarylayer;
 
                                     // Assign each feature to a layer
-                                    for ( i = 0; i < thisPrimaryLayer.geojson.features.length; i++ ) {
+                                    for ( var i = 0; i < thisPrimaryLayer.geojson.features.length; i++ ) {
                                         thisPrimaryLayer.geojson.features[i].layer = layerName;
                                     }
 
@@ -340,7 +370,7 @@ angular.module('crsVisualisations', ["leaflet-directive"])
                                         },
                                         pointToLayer: function (feature, latlng) {
 
-                                            marker = new L.CircleMarker(latlng, {radius: feature.properties.size * 3, fillOpacity: 0.85});
+                                            var marker = new L.CircleMarker(latlng, {radius: feature.properties.size * 3, fillOpacity: 0.85});
 
                                             feature.layer = layerName;
 
@@ -427,9 +457,7 @@ angular.module('crsVisualisations', ["leaflet-directive"])
             }
         };
 
-        $scope.loadMaps( $scope.mapData );
-
-
+        $scope.loadMaps($scope.mapData);
 
     }])
     .directive('crsVisualisation', function() {
@@ -438,8 +466,8 @@ angular.module('crsVisualisations', ["leaflet-directive"])
             replace: true,
             templateUrl: 'directives/visualisation.html',
             scope: {
-                visualisationData: '=',
-                visualisationType: '='
+                visualisationUrl    : '=',
+                visualisationType   : '='
             },
             controller: 'crsVisualisationDirectiveController'
         };

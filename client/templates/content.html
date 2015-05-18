@@ -2,16 +2,6 @@
 
     <!-- Main content (chart) panel -->
     <div class="small-12 medium-8 large-8 grid-block vertical visualisation-container">
-        <div class="grid-block shrink visualisation-selector" ng-if="content.visualisations && content.visualisations.length > 1">
-            <h4 class="grid-block shrink visualisation-selector-label">Visualisations:</h4>
-            <ul class="grid-block">
-                <li ng-repeat="(key, value) in content.visualisations" class="grid-block shrink">
-                    <a ui-sref="section.visualisation({ visualisationType: key })">
-                        <img ng-src="{{'/assets/img/' + key + '.svg'}}" ng-alt="{{key}}" ng-title="key"/>
-                    </a>
-                </li>
-            </ul>
-        </div>
         <div ui-view="visualisation" class="grid-block visualisation-view"></div>
     </div>
 

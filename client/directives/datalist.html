@@ -1,33 +1,38 @@
 <div class="datalist grid-block vertical">
     <div class="filters grid-content shrink">
-        <div>
-            <input type="text" ng-model="search" placeholder="Search" />
+        <div class="search">
+            <input type="text" ng-model="filters.search" placeholder="Search" />
         </div>
-        <div>
-            <h4>Sort by:</h4>
-            <select ng-model="predicate" placeholder="Choose a field">
-                <option></option>
-                <option ng-repeat="header in columnheaders" ng-bind="header.title" ng-if="header.show" ng-value="$index"></option>
-            </select>
+        <div class="select">
+            <ui-select ng-model="filters.search" search-enabled="{{sections.length > 9}}">
+                <ui-select-match placeholder="Legend">Legend <span class="selected-section" ng-if="$select.selected">(<span ng-bind="$select.selected.legendLabel"></span> selected)</span></ui-select-match>
+                <ui-select-choices repeat="entry.legendLabel as entry in legend track by $index">
+                    <span class="legend-indicator" ng-attr-style="background-color: {{ entry.fillColor }}" ng-bind="styledefinition.nodestyles[entry.style].legendLabel"></span>
+                    <span ng-bind-html="entry.legendLabel | highlight: $select.search"></span>
+                </ui-select-choices>
+            </ui-select>
         </div>
-        <div>
-            <a ng-click="toggleSortOrder()" ng-class="{ ascending: ascending }"><span ng-bind="ascending ? 'Ascending' : 'Descending'"></span></a>
-        </div>
-        <div>
-            <h4>Legend:</h4>
-            <select ng-model="search" placeholder="Choose a field">
-                <option></option>
-                <option ng-repeat="entry in styledefinition.nodestyles" ng-bind="entry.legendLabel" ng-value="entry.legendLabel" ng-attr-style="color: {{ entry.fillColor }}"></option>
-            </select>
+        <div class="select sorting">
+            <div class="sort-field">
+                <ui-select ng-model="filters.order" search-enabled="{{sections.length > 9}}">
+                    <ui-select-match placeholder="Sort by">Sort by <span class="selected-sort-field" ng-bind="$select.selected.title"></span></ui-select-match>
+                    <ui-select-choices repeat="header.index as header in columnheaders | filter: header.show track by $index">
+                        <div ng-bind-html="header.title | highlight: $select.search"></div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+            <div class="sort-order">
+                <a ng-click="toggleSortOrder()" ng-class="{ ascending: filters.ascending, descending: !filters.ascending }" title="Toggle sort order">Toggle sort order</a>
+            </div>
         </div>
     </div>
-    <ul class="grid-content">
-        <li class="entry" ng-repeat="entry in data | filter:search:strict | orderObjectBy: predicate:ascending" ng-class="{ active: entry.id == selected }" ng-click="selectEntry( entry.id )">
+    <ul class="grid-content record-list">
+        <li class="entry" ng-attr-title="{{styledefinition.nodestyles[entry.style].legendLabel}}" ng-repeat="entry in data | filter:filters.search:strict | orderObjectBy: filters.order:filters.ascending" ng-class="{ active: entry.id == filters.selected }" ng-click="selectEntry( entry.id )">
             <ul>
                 <li ng-repeat="field in entry.fields" ng-class="{ primary: columnheaders[$index].title == 'Name'}">
-                    <span ng-if="columnheaders[$index].id == 'name'" ng-attr-style="color: {{ styledefinition.nodestyles[entry.style].fillColor }}" ng-attr-title="{{styledefinition.nodestyles[entry.style].legendLabel}}">// </span>
-                    <span ng-bind="field.v"></span>
-                    <span class="filtered-highlight" ng-if="predicate && columnheaders[predicate].id != 'name' && columnheaders[$index].id == 'name' && entry.id != selected">[<span ng-bind="entry.fields[predicate].v"></span>]</span>
+                    <span class="legend-indicator" ng-if="columnheaders[$index].id == 'name'" ng-attr-style="background-color: {{ styledefinition.nodestyles[entry.style].fillColor }}" ng-bind="styledefinition.nodestyles[entry.style].legendLabel"></span>
+                    <span ng-if="columnheaders[$index].id != 'name'" ng-bind="columnheaders[$index].title + ': '"></span><span ng-bind="field.v"></span>
+                    <span class="filtered-highlight" ng-if="filters.order && columnheaders[filters.order].id != 'name' && columnheaders[$index].id == 'name' && entry.id != selected">[<span ng-bind="entry.fields[filters.order].v"></span>]</span>
                 </li>
             </ul>
         </li>

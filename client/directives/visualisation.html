@@ -1,7 +1,6 @@
 <div class="visualisation grid-block" id="visualisation-container">
-    <div class="grid-block shrink" id="layers-container" ui-view="secondary"></div>
-    <crs-datalist ng-if="visualisationType == 'layers'" layer-data="visualisationData" class="grid-block"></crs-datalist>
-    <crs-map ng-if="visualisationType == 'maps'" map-data="visualisationData" class="grid-block"></crs-map>
-    <crs-graph ng-if="visualisationType == 'graphs'" graph-data="visualisationData" class="grid-block"></crs-graph>
-    <crs-chart ng-if="visualisationType == 'charts'" chart-data="visualisationData" class="grid-block"></crs-chart>
+    <crs-datalist ng-if="visualisationType == 'layers' && visualisationDataLoaded" layer-data="visualisationData" class="grid-block"></crs-datalist>
+    <crs-map ng-if="visualisationType == 'maps' && visualisationDataLoaded" map-data="visualisationData" class="grid-block"></crs-map>
+    <crs-graph ng-if="visualisationType == 'graphs' && visualisationDataLoaded" graph-data="visualisationData" class="grid-block"></crs-graph>
+    <crs-chart ng-if="visualisationType == 'charts' && visualisationDataLoaded" chart-data="visualisationData" class="grid-block"></crs-chart>
 </div>

@@ -1,27 +1,28 @@
-app.factory('projects', function ( Restangular ) {
-    return Restangular.all('projects');
-});
-
-app.factory('sections', function ( Restangular ) {
-    return Restangular.all('sections');
-});
-
-app.factory('phases', function ( Restangular ) {
-    return Restangular.all('phases');
-});
-
-// Restangular service that uses a different URL
-app.factory('IJSRestangular', function(Restangular) {
+app.factory('APIRestangular', function(Restangular) {
     return Restangular.withConfig(function(RestangularConfigurer) {
-        RestangularConfigurer.setBaseUrl('http://sybil-api.cambridgeriskframework.com').setRequestSuffix('');
+        RestangularConfigurer.setBaseUrl('http://sybil-api.cambridgeriskframework.com/api').setRequestSuffix('/');
+        RestangularConfigurer.setResponseExtractor(function(response) {
+            var newResponse = response.originalElement;
+            return newResponse;
+        });
     });
 });
 
-app.factory('ijsRequest', function ( IJSRestangular ) {
-    return IJSRestangular.all('');
+app.factory('apiRequest', function ( APIRestangular ) {
+    return APIRestangular.all('');
 });
 
+app.factory('projects', function ( apiRequest ) {
+    return apiRequest.all('projects');
+});
 
+app.factory('sections', function ( apiRequest ) {
+    return apiRequest.all('sections');
+});
+
+app.factory('phases', function ( apiRequest ) {
+    return apiRequest.all('phases');
+});
 
 // Filters
 

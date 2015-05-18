@@ -131,18 +131,60 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
         })
         .state('section.visualisation', {
             resolve     : {
-                visualisation: [ '$stateParams', '$filter', 'ijsRequest', 'section', function( $stateParams, $filter, ijsRequest, section ) {
+                visualisations: [ '$stateParams', '$filter', 'section', function( $stateParams, $filter, section ) {
 
-                    var visualisationType = $stateParams.visualisationType;
+                    var visualisations = [];
 
-                    // We have the IJS type, not the URL, so we need to grab the URL from the section object.
-                    var visualisationUrl = section.visualisations[visualisationType];
+                    var requestedVisualisations = $stateParams.visualisationTypes;
 
-                    return ijsRequest.get( visualisationUrl );
+                    if ( typeof(requestedVisualisations) != 'undefined'|| requestedVisualisations.length < 1 ) {
+
+                        if ( typeof(section.defaultvisibility) != 'undefined' ) {
+
+                            var visualisation = {
+                                visualisationType: section.defaultvisibility,
+                                visualisationUrl: section.visualisations[section.defaultvisibility]
+                            };
+
+                        } else {
+
+                            var visualisationType = Object.keys(section.visualisations)[0];
+
+                            var visualisation = {
+                                visualisationType: visualisationType,
+                                visualisationUrl: section.visualisations[visualisationType]
+                            };
+
+                        }
+
+                        visualisations.push(visualisation);
+
+                    } else {
+
+                        var visualisationTypes = $stateParams.visualisationTypes.split('-');
+
+                        console.log(visualisationTypes);
+
+                        for ( var i = 0; i < visualisationTypes.length; i++ ) {
+
+                            var visualisationType = visualisationTypes[i];
+                            // We have the IJS type, not the URL, so we need to grab the URL from the section object.
+                            var visualisation = {
+                                visualisationType: visualisationType,
+                                visualisationUrl: section.visualisations[visualisationType]
+                            };
+
+                            visualisations.push(visualisation);
+
+                        }
+
+                    }
+
+                    return visualisations;
 
                 }]
             },
-            url: '/:visualisationType',
+            url: '/:visualisationTypes',
             parent: 'section',
             views: {
                 "visualisation": {
@@ -177,18 +219,60 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
         })
         .state('phase.visualisation', {
             resolve     : {
-                visualisation: [ '$stateParams', '$filter', 'ijsRequest', 'phase', function( $stateParams, $filter, ijsRequest, phase ) {
+                visualisations: [ '$stateParams', '$filter', 'phase', function( $stateParams, $filter, phase ) {
 
-                    var visualisationType = $stateParams.visualisationType;
+                    var visualisations = [];
 
-                    // We have the IJS type, not the URL, so we need to grab the URL from the section object.
-                    var visualisationUrl = phase.visualisations[visualisationType];
+                    var requestedVisualisations = $stateParams.visualisationTypes;
 
-                    return ijsRequest.get( visualisationUrl );
+                    if ( typeof(requestedVisualisations) != 'undefined'|| requestedVisualisations.length < 1 ) {
+
+                        if ( typeof(phase.defaultvisibility) != 'undefined' ) {
+
+                            var visualisation = {
+                                visualisationType: phase.defaultvisibility,
+                                visualisationUrl: phase.visualisations[phase.defaultvisibility]
+                            };
+
+                        } else {
+
+                            var visualisationType = Object.keys(phase.visualisations)[0];
+
+                            var visualisation = {
+                                visualisationType: visualisationType,
+                                visualisationUrl: phase.visualisations[visualisationType]
+                            };
+
+                        }
+
+                        visualisations.push(visualisation);
+
+                    } else {
+
+                        var visualisationTypes = $stateParams.visualisationTypes.split('-');
+
+                        console.log(visualisationTypes);
+
+                        for ( var i = 0; i < visualisationTypes.length; i++ ) {
+
+                            var visualisationType = visualisationTypes[i];
+                            // We have the IJS type, not the URL, so we need to grab the URL from the phase object.
+                            var visualisation = {
+                                visualisationType: visualisationType,
+                                visualisationUrl: phase.visualisations[visualisationType]
+                            };
+
+                            visualisations.push(visualisation);
+
+                        }
+
+                    }
+
+                    return visualisations;
 
                 }]
             },
-            url: '/:visualisationType',
+            url: '/:visualisationTypes',
             parent: 'phase',
             views: {
                 "visualisation": {
@@ -273,7 +357,7 @@ function run($rootScope, $timeout, $state, utilsService, FoundationApi) {
             color       : 'error'
         });
 
-        $state.reload();
+        //$state.reload();
 
         // check if we tried to go to a home state, then we cannot redirect again to the same
         // homestate, because that would lead to a loop

@@ -133,12 +133,10 @@ app.controller('crsPhaseController', function ( $scope, phase, $state ) {
 
 });
 
-app.controller('crsVisualisationController', function ( $scope, $stateParams, visualisation ) {
+app.controller('crsVisualisationController', function ( $scope, $stateParams, visualisations ) {
 
-    $scope.visualisation = {
-        visualisationData   :   visualisation.originalElement,
-        visualisationType   :   $stateParams.visualisationType
-    };
-    console.log( 'Visualisation added to scope:', $scope.visualisation );
+    $scope.visualisations = visualisations;
+
+    console.log( 'Visualisations added to scope:', $scope.visualisations );
 
 });

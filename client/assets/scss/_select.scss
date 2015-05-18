@@ -239,7 +239,9 @@ Version: 3.4.8 Timestamp: Thu May  1 09:50:32 EDT 2014
 .select2-container,
 .select2-drop,
 .select2-search,
-.select2-search input {
+.select2-search input,
+.search,
+.search input {
     /*
       Force border-box so that % widths fit the parent
       container without overlap because of margin/padding.
@@ -413,7 +415,8 @@ Version: 3.4.8 Timestamp: Thu May  1 09:50:32 EDT 2014
     }
 }
 
-.select2-container .select2-search input {
+.select2-container .select2-search input,
+.search input[type="text"] {
     width: 100%;
     height: auto !important;
     min-height: 26px;
@@ -429,7 +432,8 @@ Version: 3.4.8 Timestamp: Thu May  1 09:50:32 EDT 2014
     background-color: $color-offwhite;
 }
 
-.select2-search {
+.select2-search,
+.search  {
     position: relative;
     padding: 0 5px;
 
@@ -448,11 +452,13 @@ Version: 3.4.8 Timestamp: Thu May  1 09:50:32 EDT 2014
     }
 }
 
-.select2-container .select2-search input:hover {
+.select2-container .select2-search input:hover,
+.search input[type="text"]:hover {
     border: 2px solid $color-light-grey;
     background-color: $color-offwhite;
 }
-.select2-container .select2-search input:focus {
+.select2-container .select2-search input:focus,
+.search input[type="text"]:focus {
     border: 2px solid $color-white;
     background-color: $color-offwhite;
 }
@@ -460,6 +466,14 @@ Version: 3.4.8 Timestamp: Thu May  1 09:50:32 EDT 2014
 
 .select2-drop.select2-drop-above .select2-search input {
     margin-top: 4px;
+}
+
+.search input[type="text"] {
+    padding: 9px 25px 8px 30px;
+}
+.search:after {
+    left: 4px;
+    top: 4px;
 }
 
 .select2-search input.select2-active {
@@ -508,11 +522,12 @@ Version: 3.4.8 Timestamp: Thu May  1 09:50:32 EDT 2014
 .select2-results {
     max-height: 320px;
     padding: 0;
-    margin: 5px 0 0;
+    margin: 0;
     position: relative;
     overflow-x: hidden;
     overflow-y: auto;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    box-shadow: 0 1px 1px 1px $color-toolbar-dark;
 }
 
 .select2-results ul.select2-result-sub {
@@ -536,7 +551,7 @@ Version: 3.4.8 Timestamp: Thu May  1 09:50:32 EDT 2014
 }
 
 .select2-results .select2-result-label {
-    padding: 3px 7px 4px;
+    padding: 3px 10px 4px;
     margin: 0;
     cursor: pointer;
 
@@ -672,7 +687,8 @@ html[dir="rtl"] .select2-container-multi .select2-choices li
 {
     float: right;
 }
-.select2-container-multi .select2-choices .select2-search-field {
+.select2-container-multi .select2-choices .select2-search-field,
+.search {
     margin: 0;
     padding: 0;
     white-space: nowrap;
@@ -681,7 +697,6 @@ html[dir="rtl"] .select2-container-multi .select2-choices li
 .select2-container-multi .select2-choices .select2-search-field input {
     padding: 5px;
     margin: 1px 0;
-
     font-size: 100%;
     color: #666;
     outline: 0;
@@ -808,20 +823,4 @@ html[dir="rtl"] .select2-search-choice-close {
     width: 100px;
     height: 100px;
     overflow: scroll;
-}
-
-/* Retina-ize icons */
-
-@media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min-resolution: 2dppx)  {
-    .select2-search input,
-    .select2-search-choice-close,
-    .select2-container .select2-choice abbr,
-    .select2-container .select2-choice .select2-arrow b {
-        background-repeat: no-repeat !important;
-        background-size: 60px 40px !important;
-    }
-
-    .select2-search input {
-        background-position: 100% -21px !important;
-    }
 }

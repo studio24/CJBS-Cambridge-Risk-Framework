@@ -316,6 +316,9 @@ nav {
     background: #003d45;
 
     .visualisation {
+        margin: 0;
+        padding: 0;
+
         svg {
             path.link {
                 fill-opacity: 0;
@@ -326,28 +329,165 @@ nav {
         }
     }
 }
+.legend-indicator {
+    text-indent: -99999px;
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 10px 3px 0;
+}
 .datalist {
     margin: 0;
+    background: $color-toolbar-dark;
     padding: 0;
 
+    .filters {
+        padding: rem-calc(10) rem-calc(10) 0;
+
+        label {
+            color: $color-white;
+        }
+        input {
+            width: 100%;
+            margin: 0 0 5px;
+        }
+        .select {
+            margin: 10px 0;
+        }
+        .select2-container {
+            display: block;
+        }
+        .sorting {
+            position: relative;
+        }
+        .sort-field {
+            margin-right: 41px;
+
+            .selected-sort-field {
+                color: $color-highlight;
+            }
+        }
+        .sort-order {
+            width: rem-calc(40);
+            height: rem-calc(40);
+            text-indent: -99999px;
+            background-color: $color-toolbar-button;
+            margin-left: 1px;
+            position: absolute;
+            top: 0;
+            right: 0;
+
+            a {
+                display: block;
+                width: rem-calc(40);
+                height: rem-calc(40);
+                position: relative;
+                text-indent: -99999px;
+
+                &:after {
+                    @include fa-icon();
+                    color: $color-light-grey;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    font-size: 20px;
+                    line-height: 40px;
+                    text-align: center;
+                    text-indent: 0;
+                }
+                &.ascending:after {
+                    content: $fa-var-angle-double-up;
+                }
+                &.descending:after {
+                    content: $fa-var-angle-double-down;
+                }
+                &:hover {
+                    &:after {
+                        color: $color-white;
+                    }
+                }
+                &.disabled {
+                    &:after {
+                        color: $color-black;
+                    }
+                }
+            }
+        }
+    }
     ul, li {
         margin: 0;
         padding: 0;
     }
+    .record-list {
+        position: relative;
 
-    li {
+        &:after {
+            border-bottom: 1px solid $color-toolbar-edge;
+            content: ' ';
+            position: absolute;
+            top: 0;
+            left: 10px;
+            margin: 0;
+            right: 10px;
+        }
+    }
+    .entry {
+        font-size: rem-calc(13);
+        padding: rem-calc(5) rem-calc(15);
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
 
+        &:after {
+            border-bottom: 1px solid $color-toolbar-edge;
+            content: ' ';
+            position: absolute;
+            bottom: 0;
+            left: 10px;
+            margin: 0;
+            right: 10px;
+        }
+        &:hover {
+            background-color: $color-toolbar-button;
+        }
         li {
             display: none;
 
             &.primary {
                 display: block;
+                clear: both;
+
+                .filtered-highlight {
+                    float: right;
+                    color: $color-highlight;
+                }
             }
         }
 
         &.active {
+            margin: -1px 0 0;
+            border-top: 1px solid $color-toolbar-edge;
+            background-color: $color-toolbar-button;
+            padding: 15px 38px 18px;
+
             li {
                 display: block;
+                color: $color-white;
+            }
+            .filtered-highlight {
+                display: none;
+            }
+            .legend-indicator {
+                position: absolute;
+                top: 23px;
+                left: 15px;
+            }
+            .primary {
+                font-weight: 700;
             }
         }
     }
@@ -489,7 +629,6 @@ body {
     }
 }
 
-
 .info-panel {
     background-color: $color-offwhite;
     color: $color-black;
@@ -499,16 +638,6 @@ body {
         color: $color-black;
     }
 
-}
-
-.filters {
-    label {
-        color: $color-white;
-    }
-    input {
-        width: 100%;
-    }
-    background-color: $color-toolbar-dark;
 }
 
 .project-title-bar {
