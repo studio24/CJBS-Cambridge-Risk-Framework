@@ -14,15 +14,71 @@ crsVisualisations
     .factory('ijsRequest', function ( IJSRestangular ) {
         return IJSRestangular.all('');
     })
-    .controller('crsVisualisationDirectiveController', function ( $scope, $element, $window, ijsRequest ) {
+    .factory('visualisationStatus', function(){
+        return {
+            count: 0,
+            selected: null,
+            updateSelected: function(id) {
+                this.selected = id;
+                console.log('Visualisation status service registered an ID change: ', this.selected);
+            },
+            error: function(msg) {
+                this.status = 'error';
+                this.message = msg;
+            },
+            clear: function() {
+                this.status = null;
+                this.message = null;
+            }
+        }
+    })
+    .controller('crsInfoPanelDirectiveController', function ( $scope, $element, $window, $timeout ) {
+
+        $scope.toggleInfoPanel = function () {
+            $scope.infoVisible = !$scope.infoVisible;
+
+            $timeout(function(){
+                window.dispatchEvent(new Event('resize'));
+            });
+        };
+
+        $scope.infoVisible = true;
+
+    })
+    .controller('crsVisualisationDirectiveController', function ( $scope, $element, $window, ijsRequest, $timeout, visualisationStatus ) {
 
         ijsRequest.get( $scope.visualisationUrl ).then(function(_data){
             $scope.visualisationData = _data.originalElement;
             $scope.visualisationDataLoaded = true;
         });
 
+        $scope.toggleVisualisation = function () {
+
+            if ( $scope.visualisationActive ) {
+                if ( $scope.visualisationStatus.count > 1 ) {
+                    $scope.visualisationActive = false;
+                    $scope.visualisationStatus.count--;
+                }
+            } else {
+                if ( $scope.visualisationStatus.count < 3 ) {
+                    $scope.visualisationActive = true;
+                    $scope.visualisationStatus.count++;
+                }
+            }
+
+
+            $timeout(function(){
+                window.dispatchEvent(new Event('resize'));
+            }, 300);
+
+        };
+
+        $scope.$watch('visualisationStatus', function() {
+            console.log('Selected ID has been registered in visualisation: ', $scope.visualisationType , $scope.visualisationStatus.selected);
+        }, true);
+
     })
-    .controller('crsDatalistDirectiveController', function ( $scope, $element, $window ) {
+    .controller('crsDatalistDirectiveController', function ( $scope, $element, $window, visualisationStatus ) {
 
         $scope.filters = {
             order       :   null,
@@ -36,7 +92,7 @@ crsVisualisations
         };
 
         $scope.selectEntry = function ( entryId ) {
-            $scope.filters.selected = entryId;
+            $scope.visualisationStatus.selected = entryId;
         };
 
         $scope.toggleSortOrder = function (){
@@ -110,7 +166,7 @@ crsVisualisations
         $scope.loadDatalist($scope.layerData);
 
     })
-    .controller('crsChartDirectiveController', function ( $scope, $element, $window ) {
+    .controller('crsChartDirectiveController', function ( $scope, $element, $window, visualisationStatus ) {
 
         // Chart drawing logic goes here
         $scope.loadCharts = function(data) {
@@ -194,7 +250,7 @@ crsVisualisations
         $scope.loadCharts($scope.chartData);
 
     })
-    .controller('crsGraphDirectiveController', function ( $scope, $element, $window ) {
+    .controller('crsGraphDirectiveController', function ( $scope, $element, $window, visualisationStatus ) {
 
         // Graph drawing logic goes here
         $scope.loadGraphs = function($data) {
@@ -216,8 +272,48 @@ crsVisualisations
 
         $scope.loadGraphs($scope.graphData);
 
+        $scope.highlightNode = function ( nodeId ) {
+            var nodes = d3.selectAll('.node');
+            nodes.classed('selected', false);
+            d3.select('#node' + nodeId).classed('selected', true);
+        };
+
+        $scope.syncNetworkNodes = function () {
+            var nodes = d3.selectAll('.node');
+            nodes.classed('open', false);
+            var companies = $parent.currentData.companies;
+            for (var i in companies) {
+                if (companies.hasOwnProperty([i])) {
+                    var company = companies[i];
+                    if (company.class == 'open') {
+                        d3.select('#node' + company.hiddenProperties.guid).classed('open', true);
+                    }
+                }
+            }
+
+        };
+
+        $scope.$watch('selected', function() {
+            console.log('Selected ID has changed: ', $scope.selected);
+            visualisationStatus.updateSelected($scope.selected);
+
+            $scope.visualisationStatus.selected = $scope.selected;
+
+            $scope.highlightNode($scope.visualisationStatus.selected);
+
+        });
+
+        $scope.$watch('visualisationStatus', function() {
+
+            $scope.highlightNode($scope.visualisationStatus.selected);
+
+        }, true);
+
+
+
+
     })
-    .controller('crsMapDirectiveController', [ "$scope", "leafletData", "leafletBoundsHelpers", function ( $scope, leafletData, leafletBoundsHelpers ) {
+    .controller('crsMapDirectiveController', [ "$scope", "leafletData", "leafletBoundsHelpers", function ( $scope, leafletData, leafletBoundsHelpers, visualisationStatus ) {
         // Chart drawing logic goes in here
         $scope.loadMaps = function(data) {
             // D3
@@ -387,6 +483,9 @@ crsVisualisations
                                             return marker;
 
                                         },
+                                        onEachFeature: function(feature, layer) {
+                                            layer._leaflet_id = feature.id;
+                                        },
                                         layer: layerName,
                                         type: 'geoJSON',
                                         filter: function (feature) {
@@ -439,7 +538,7 @@ crsVisualisations
 
                     leafletData.getMap().then(function(map) {
                         //Access the map object
-
+                        //$scope.geojson
                     });
 
                     $scope.$on("leafletDirectiveMap.geojsonMouseover", function(ev, feature, leafletEvent) {
@@ -451,7 +550,16 @@ crsVisualisations
                         var layer = leafletEvent.target;
                         layer.bringToFront();
                         console.log(feature.id + ' clicked', feature);
+
+                        $scope.visualisationStatus.selected = feature.id;
+
                     });
+
+                    $scope.$watch('visualisationStatus', function() {
+
+                        $scope.highlightNode($scope.visualisationStatus.selected);
+
+                    }, true);
 
                 }
             }
@@ -459,7 +567,53 @@ crsVisualisations
 
         $scope.loadMaps($scope.mapData);
 
+        $scope.syncMapNodes = function () {
+            var allMarkers = $scope.allMapMarkers;
+            var map = $scope.getGuidToIdMap();
+            for (var key in allMarkers) {
+                if (allMarkers.hasOwnProperty(key)) {
+                    var id = allMarkers[key]._id;
+                    var className = $parent.currentData.companies[map[id]].class;
+                    allMarkers[key]._container.setAttribute('class', className);
+                    allMarkers[key]._path.removeAttribute('stroke');
+                    if (className == 'open') {
+                        // remove/add to DOM to repaint on top
+                        var parent = allMarkers[key]._container.parentNode;
+                        var tmpContainer = allMarkers[key]._container;
+                        parent.removeChild(tmpContainer);
+                        parent.appendChild(tmpContainer);
+                    }
+                }
+            }
+        };
+
+        $scope.highlightNode = function ( nodeId ) {
+
+            leafletData.getMap().then(function(map) {
+
+                console.log(map);
+                //Access the map object
+                var feature = $scope.geojson.getLayer(nodeId);
+                console.log(feature);
+
+            });
+
+
+
+        };
+
     }])
+    .directive('crsInfoPanel', function() {
+        return {
+            restrict: 'AE',
+            replace: true,
+            templateUrl: 'directives/info-panel.html',
+            scope: {
+                info    : '='
+            },
+            controller: 'crsInfoPanelDirectiveController'
+        };
+    })
     .directive('crsVisualisation', function() {
         return {
             restrict: 'AE',
@@ -467,7 +621,9 @@ crsVisualisations
             templateUrl: 'directives/visualisation.html',
             scope: {
                 visualisationUrl    : '=',
-                visualisationType   : '='
+                visualisationType   : '=',
+                visualisationActive : '=',
+                visualisationStatus: '='
             },
             controller: 'crsVisualisationDirectiveController'
         };
@@ -478,7 +634,8 @@ crsVisualisations
             replace: true,
             templateUrl: 'directives/datalist.html',
             scope: {
-                layerData: '='
+                layerData: '=',
+                visualisationStatus: '='
             },
             controller: 'crsDatalistDirectiveController'
         };
@@ -488,7 +645,8 @@ crsVisualisations
             restrict: 'AE',
             templateUrl: 'directives/map.html',
             scope: {
-                mapData: '='
+                mapData: '=',
+                visualisationStatus: '='
             },
             controller: 'crsMapDirectiveController'
         };
@@ -498,7 +656,8 @@ crsVisualisations
             restrict: 'AE',
             templateUrl: 'directives/graph.html',
             scope: {
-                graphData: '='
+                graphData: '=',
+                visualisationStatus: '='
             },
             controller: 'crsGraphDirectiveController'
         };
@@ -508,7 +667,8 @@ crsVisualisations
             restrict: 'AE',
             templateUrl: 'directives/chart.html',
             scope: {
-                chartData: '='
+                chartData: '=',
+                visualisationStatus: '='
             },
             controller: 'crsChartDirectiveController'
         };

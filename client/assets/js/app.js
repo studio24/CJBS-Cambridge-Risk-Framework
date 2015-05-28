@@ -92,7 +92,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             parent: 'project',
             views       : {
                 "content": {
-                    templateUrl: 'templates/section.html',
+                    templateUrl: 'templates/section.html'
                 }
             },
             abstract: true
@@ -130,61 +130,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             }
         })
         .state('section.visualisation', {
-            resolve     : {
-                visualisations: [ '$stateParams', '$filter', 'section', function( $stateParams, $filter, section ) {
-
-                    var visualisations = [];
-
-                    var requestedVisualisations = $stateParams.visualisationTypes;
-
-                    if ( typeof(requestedVisualisations) != 'undefined'|| requestedVisualisations.length < 1 ) {
-
-                        if ( typeof(section.defaultvisibility) != 'undefined' ) {
-
-                            var visualisation = {
-                                visualisationType: section.defaultvisibility,
-                                visualisationUrl: section.visualisations[section.defaultvisibility]
-                            };
-
-                        } else {
-
-                            var visualisationType = Object.keys(section.visualisations)[0];
-
-                            var visualisation = {
-                                visualisationType: visualisationType,
-                                visualisationUrl: section.visualisations[visualisationType]
-                            };
-
-                        }
-
-                        visualisations.push(visualisation);
-
-                    } else {
-
-                        var visualisationTypes = $stateParams.visualisationTypes.split('-');
-
-                        console.log(visualisationTypes);
-
-                        for ( var i = 0; i < visualisationTypes.length; i++ ) {
-
-                            var visualisationType = visualisationTypes[i];
-                            // We have the IJS type, not the URL, so we need to grab the URL from the section object.
-                            var visualisation = {
-                                visualisationType: visualisationType,
-                                visualisationUrl: section.visualisations[visualisationType]
-                            };
-
-                            visualisations.push(visualisation);
-
-                        }
-
-                    }
-
-                    return visualisations;
-
-                }]
-            },
-            url: '/:visualisationTypes',
+            url: '/:visualisationType',
             parent: 'section',
             views: {
                 "visualisation": {
@@ -218,61 +164,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             }
         })
         .state('phase.visualisation', {
-            resolve     : {
-                visualisations: [ '$stateParams', '$filter', 'phase', function( $stateParams, $filter, phase ) {
-
-                    var visualisations = [];
-
-                    var requestedVisualisations = $stateParams.visualisationTypes;
-
-                    if ( typeof(requestedVisualisations) != 'undefined'|| requestedVisualisations.length < 1 ) {
-
-                        if ( typeof(phase.defaultvisibility) != 'undefined' ) {
-
-                            var visualisation = {
-                                visualisationType: phase.defaultvisibility,
-                                visualisationUrl: phase.visualisations[phase.defaultvisibility]
-                            };
-
-                        } else {
-
-                            var visualisationType = Object.keys(phase.visualisations)[0];
-
-                            var visualisation = {
-                                visualisationType: visualisationType,
-                                visualisationUrl: phase.visualisations[visualisationType]
-                            };
-
-                        }
-
-                        visualisations.push(visualisation);
-
-                    } else {
-
-                        var visualisationTypes = $stateParams.visualisationTypes.split('-');
-
-                        console.log(visualisationTypes);
-
-                        for ( var i = 0; i < visualisationTypes.length; i++ ) {
-
-                            var visualisationType = visualisationTypes[i];
-                            // We have the IJS type, not the URL, so we need to grab the URL from the phase object.
-                            var visualisation = {
-                                visualisationType: visualisationType,
-                                visualisationUrl: phase.visualisations[visualisationType]
-                            };
-
-                            visualisations.push(visualisation);
-
-                        }
-
-                    }
-
-                    return visualisations;
-
-                }]
-            },
-            url: '/:visualisationTypes',
+            url: '/:visualisationType',
             parent: 'phase',
             views: {
                 "visualisation": {

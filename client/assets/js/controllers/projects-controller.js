@@ -47,7 +47,7 @@ app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', '$
     var parentState = 'project',
         defaultChildState = 'section';
 
-    // Chech if the project has been accessed directly
+    // Check if the project has been accessed directly
     if($state.current.name.substr(-parentState.length) === parentState) {
 
         // The project has been accessed directly. Load the first section
@@ -57,6 +57,15 @@ app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', '$
         {
             'location'   :   'replace'
         });
+    } else {
+
+        $state.go('section.visualisation', {
+                'visualisationType': 'visualisation'
+            },
+            {
+                'location'   :   'replace'
+            });
+
     }
 
 
@@ -82,20 +91,16 @@ app.controller('crsSectionController', function ( $scope, section, $state ) {
             $state.go(defaultChildState, {
                 'phaseNumber': 1
             });
+
         } else {
 
-            // Check if the section has a default visualisation set
-            if ( $scope.content.defaultvisibility && $scope.content.defaultvisibility != '' ) {
-
-                // The default visualisation is set, so load that visualisation
-                $state.go('section.visualisation', {
-                    'visualisationType': $scope.content.defaultvisibility
+            $state.go('section.visualisation', {
+                    'visualisationType': 'visualisation'
                 },
                 {
                     'location'   :   'replace'
                 });
 
-            }
         }
 
     }
@@ -116,27 +121,97 @@ app.controller('crsPhaseController', function ( $scope, phase, $state ) {
     // Check if the phase has been accessed directly
     if($state.current.name.substr(-parentState.length) === parentState) {
 
-        // Check if the phase has a default visualisation set
-        if ($scope.content.defaultvisibility && $scope.content.defaultvisibility != '') {
-
-            // The default visualisation is set, so load that visualisation
-            $state.go(defaultChildState, {
-                'visualisationType': $scope.content.defaultvisibility
+        $state.go('phase.visualisation', {
+                'visualisationType': 'visualisation'
             },
             {
                 'location'   :   'replace'
             });
 
-        }
-
     }
 
 });
 
-app.controller('crsVisualisationController', function ( $scope, $stateParams, visualisations ) {
+app.controller('crsVisualisationController', ['$scope', '$stateParams', '$timeout', function ( $scope, $stateParams, $timeout ) {
 
-    $scope.visualisations = visualisations;
+    console.log('Loading...');
 
-    console.log( 'Visualisations added to scope:', $scope.visualisations );
+    var defaultVisualisation;
 
-});
+    if ( typeof($scope.content.defaultvisibility) != 'undefined' ) {
+
+        defaultVisualisation = $scope.content.defaultvisibility;
+
+    } else {
+
+        defaultVisualisation = Object.keys( $scope.content.visualisations )[0];
+
+    }
+
+    var setDefaultState = function (visualisationType) {
+
+        return visualisationType == defaultVisualisation;
+
+    };
+
+
+    angular.extend($scope, {
+        visualisations  : [],
+        activeCount     : 0
+    });
+
+    $scope.visualisationStatus = {
+        count: 0
+    };
+
+    for (var key in $scope.content.visualisations) {
+
+        if ($scope.content.visualisations.hasOwnProperty(key)) {
+
+            var visualisation = {
+                visualisationType: key,
+                visualisationUrl: $scope.content.visualisations[key],
+                active: setDefaultState(key)
+            };
+
+            $scope.visualisations.push(visualisation);
+
+            if ( visualisation.active ) {
+                $scope.visualisationStatus.count++;
+            }
+
+        }
+    }
+
+    $scope.$watch('activeCount', function() {
+        $timeout(function(){
+            window.dispatchEvent(new Event('resize'));
+        });
+
+    });
+
+    $scope.toggleVisualisation = function ( _visualisation ) {
+
+        if ( _visualisation.active ) {
+
+            if ( $scope.visualisationStatus.count > 1 ) {
+
+                _visualisation.active = false;
+                $scope.visualisationStatus.count--;
+
+            }
+
+        } else {
+
+            if ( $scope.visualisationStatus.count < 3 ) {
+
+                _visualisation.active = true;
+                $scope.visualisationStatus.count++;
+
+            }
+
+        }
+
+    };
+
+}]);

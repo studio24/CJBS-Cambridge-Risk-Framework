@@ -1614,7 +1614,7 @@ S24.Charts = function()
             .attr('r', function (d) { return 3 * d.size; });
         node.on('click', function(d, i) {
             $scope.$apply(function() {
-                $scope.toggleCompanyById(d.guid);
+                $scope.selected = d.guid;
             })
         });
 

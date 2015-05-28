@@ -1,11 +1,12 @@
 $color-background       : #1c1c1c;
-$color-toolbar-dark     : #2c2d30;
 $color-toolbar-light    : #28282a;
+$color-toolbar-dark     : #202020;
 $color-toolbar-edge     : #414141;
 $color-toolbar-button   : #3e3e40;
 $color-light-grey       : #dfe0e7;
 $color-dark-grey        : #757678;
-
+$color-info-red         : #de3838;
+$color-dark-red         : #c81f1f;
 $color-white            : #ffffff;
 $color-offwhite         : #eeeeee;
 $color-black            : #111111;
@@ -196,7 +197,8 @@ nav {
         }
     }
     &.phase-navigation {
-        color: $color-toolbar-dark;
+        background-color: $color-toolbar-dark;
+        border-top: 1px solid $color-toolbar-edge;
 
         .phase-controls {
             margin-right: 40px;
@@ -249,7 +251,7 @@ nav {
 
                 a {
                     margin: 0 0 0 -8px;
-                    padding: 5px 0;
+                    padding: 8px 0;
                     color: $color-dark-grey;
                     transition-property: all;
                     transition-duration: 0.3s;
@@ -315,9 +317,44 @@ nav {
 .visualisation-container {
     background: #003d45;
 
+    .visualisation-content {
+        border: 1px solid $color-black;
+        border-right: none;
+    }
+    .graphs .visualisation-content {
+        background-color: #003d45;
+
+        .nodeSelected {
+            svg {
+                circle, path {
+                    transition-property: all;
+                    transition-duration: 0.3s;
+                    opacity: 0.3;
+                }
+                .selected {
+                    circle {
+                        stroke: $color-white;
+                        stroke-width: 3px;
+                        opacity: 1;
+                    }
+                }
+            }
+        }
+
+    }
+    .charts .visualisation-content {
+        background-color: black;
+    }
+    .maps .visualisation-content {
+        background-color: #e7eaf3;
+    }
+    .layers .visualisation-content {
+        background-color: $color-toolbar-dark;
+    }
     .visualisation {
         margin: 0;
-        padding: 0;
+        background: $color-toolbar-light;
+        padding: 6px 0;
 
         svg {
             path.link {
@@ -327,6 +364,58 @@ nav {
         .leaflet-container {
             background-color: transparent;
         }
+    }
+    .visualisation-grid {
+        border-bottom: 1px solid $color-black;
+
+        &.multiple {
+            .visualisation.active.layers {
+                min-width: 30%;
+                max-width: 30%;
+            }
+        }
+    }
+    .visualisation-grid-2 {
+        .visualisation.active {
+            min-width: 40%;
+        }
+    }
+    .visualisation-grid-3 {
+        .visualisation.active {
+            min-width: 30%;
+        }
+    }
+    .visualisation-grid-4 {
+        .visualisation.active {
+            min-width: 20%;
+        }
+    }
+}
+.sliding-panel {
+    border-left: 2px solid $color-black;
+    transition-property: all;
+    transition-duration: 0.3s;
+}
+.panel-toolbar {
+    h2 {
+        margin: 0;
+        padding: rem-calc(10) 0;
+        line-height: rem-calc(20);
+        font-size: rem-calc(20);
+    }
+    .panel-icon {
+        width: rem-calc(40);
+        max-width: rem-calc(40);
+        max-height: rem-calc(40);
+        padding: rem-calc(5);
+        font-size: 20px;
+    }
+    .panel-close {
+        width: rem-calc(40);
+        height: rem-calc(40);
+        padding: rem-calc(10);
+        line-height: rem-calc(20);
+        text-align: center;
     }
 }
 .legend-indicator {
@@ -496,13 +585,15 @@ nav {
     top: 0;
     left: 0;
     background-color: $color-toolbar-dark;
+    border-top: 1px solid $color-toolbar-edge;
+    border-bottom: 1px solid $color-black;
     overflow: hidden;
 
     .visualisation-selector-label {
         margin: 0;
-        padding: rem-calc(20);
-        height: rem-calc(60);
-        line-height: rem-calc(20);
+        padding: rem-calc(10) rem-calc(15);
+        height: rem-calc(45);
+        line-height: rem-calc(25);
     }
     ul, li {
         margin: 0;
@@ -511,18 +602,28 @@ nav {
         overflow: hidden;
     }
     li {
-        height: rem-calc(60);
-        width: rem-calc(60);
+        margin: 0 rem-calc(10);
 
         a {
             height: 100%;
             width: 100%;
-            line-height: rem-calc(60);
+            line-height: rem-calc(40);
+            opacity: 0.3;
+            transition-property: opacity;
+            transition-duration: 0.2s;
 
+            &.active {
+                opacity: 1;
+            }
             img {
-                margin: 15px auto;
-                height: 30px;
+                margin: 10px auto;
+                height: 25px;
                 display: block;
+
+                path {
+                    stroke: $color-white;
+                    fill: $color-white;
+                }
             }
         }
     }
@@ -630,19 +731,60 @@ body {
 }
 
 .info-panel {
-    background-color: $color-offwhite;
-    color: $color-black;
+    background-color: $color-info-red;
     line-height: 1.3rem;
+    color: $color-white;
 
     h1, h2, h3, h4, p, a {
-        color: $color-black;
+        color: $color-white;
     }
-
+    h1, h2, h3, h4 {
+        font-weight: 500;
+    }
+    img {
+        margin: rem-calc(10) 0 rem-calc(20);
+    }
 }
 
+.panel-header {
+    padding: rem-calc(10);
+
+    .panel-title {
+        font-size: rem-calc(20);
+        margin: 0;
+        padding: 0;
+    }
+    .panel-icon {
+        font-size: rem-calc(24);
+        color: $color-white;
+        width: rem-calc(32);
+        text-align: center;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        border-bottom: 1px solid $color-dark-red;
+
+        &:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -5px;
+            width: 100%;
+            border-bottom: 1px solid $color-dark-red;
+        }
+    }
+}
+.panel-content {
+    padding: rem-calc(20) rem-calc(40);
+}
+.info-panel {
+    .panel-icon {
+        padding: rem-calc(10);
+    }
+}
 .project-title-bar {
     background-color: $color-toolbar-light;
-    border-bottom: 5px solid $color-black;
+    border-bottom: 3px solid $color-black;
     min-height: 67px;
 
     .project-title {

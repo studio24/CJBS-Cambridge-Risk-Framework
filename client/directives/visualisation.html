@@ -1,6 +1,16 @@
-<div class="visualisation grid-block" id="visualisation-container">
-    <crs-datalist ng-if="visualisationType == 'layers' && visualisationDataLoaded" layer-data="visualisationData" class="grid-block"></crs-datalist>
-    <crs-map ng-if="visualisationType == 'maps' && visualisationDataLoaded" map-data="visualisationData" class="grid-block"></crs-map>
-    <crs-graph ng-if="visualisationType == 'graphs' && visualisationDataLoaded" graph-data="visualisationData" class="grid-block"></crs-graph>
-    <crs-chart ng-if="visualisationType == 'charts' && visualisationDataLoaded" chart-data="visualisationData" class="grid-block"></crs-chart>
+<div class="visualisation sliding-panel grid-block {{visualisationType}}" id="visualisation-container" ng-class="{'active': visualisationActive, 'shrink': !visualisationActive, 'order-1': visualisationType != 'layers', 'order-2': visualisationType == 'layers'}">
+    <div class="grid-block panel-toolbar shrink vertical">
+        <a class="grid-block shrink" ng-click="toggleVisualisation(visualisation)" ng-class="{active: visualisation.active}">
+            <img class="panel-icon" ng-src="{{'/assets/img/' + visualisationType + '.svg'}}" ng-alt="{{visualisationType}}" ng-title="visualisationType"/>
+        </a>
+        <div class="grid-block" ng-if="visualisationActive && visualisationStatus.count > 1">
+            <a class="grid-block shrink " ng-click="toggleVisualisation(visualisation)" ng-class="{active: visualisation.active}">
+                <i class="fa fa-times panel-close"></i>
+            </a>
+        </div>
+    </div>
+    <crs-datalist ng-if="visualisationType == 'layers' && visualisationDataLoaded && visualisationActive" layer-data="visualisationData" visualisation-status="visualisationStatus" class="grid-block visualisation-content"></crs-datalist>
+    <crs-map ng-if="visualisationType == 'maps' && visualisationDataLoaded && visualisationActive" map-data="visualisationData" visualisation-status="visualisationStatus" class="grid-block visualisation-content"></crs-map>
+    <crs-graph ng-if="visualisationType == 'graphs' && visualisationDataLoaded && visualisationActive" graph-data="visualisationData" visualisation-status="visualisationStatus" class="grid-block visualisation-content"></crs-graph>
+    <crs-chart ng-if="visualisationType == 'charts' && visualisationDataLoaded && visualisationActive" chart-data="visualisationData" visualisation-status="visualisationStatus" class="grid-block visualisation-content"></crs-chart>
 </div>
