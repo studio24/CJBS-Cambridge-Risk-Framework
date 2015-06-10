@@ -52,11 +52,11 @@ app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', '$
 
         // The project has been accessed directly. Load the first section
         $state.go(defaultChildState, {
-            'sectionNumber': 1
-        },
-        {
-            'location'   :   'replace'
-        });
+                'sectionNumber': 1
+            },
+            {
+                'location'   :   'replace'
+            });
     } else {
 
         $state.go('section.visualisation', {
@@ -140,17 +140,30 @@ app.controller('crsVisualisationController', ['$scope', '$stateParams', '$timeou
 
     if ( typeof($scope.content.defaultvisibility) != 'undefined' ) {
 
-        defaultVisualisation = $scope.content.defaultvisibility;
+        defaultVisualisations = $scope.content.defaultvisibility;
 
     } else {
 
-        defaultVisualisation = Object.keys( $scope.content.visualisations )[0];
+        defaultVisualisations = [Object.keys( $scope.content.visualisations )[0]];
 
     }
 
     var setDefaultState = function (visualisationType) {
 
-        return visualisationType == defaultVisualisation;
+        var visibleByDefault = false;
+
+        var lookup = {
+            graph   :   'graphs',
+            list    :   'layers'
+        };
+        for ( var i = 0; i < defaultVisualisations.length; i++ ) {
+            if ( lookup[defaultVisualisations[i]] == visualisationType ) {
+                visibleByDefault = true;
+                return visibleByDefault;
+            }
+        }
+
+        return visibleByDefault;
 
     };
 

@@ -2,8 +2,6 @@
 
 var app = angular.module('application', [
     'ui.router',
-    'ngAnimate',
-    'ngCookies',
     'ngSanitize',
     'crsVisualisations',
     'crsNavigation',
