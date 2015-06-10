@@ -32,6 +32,24 @@ crsVisualisations
             }
         }
     })
+    .filter('geoJsonFilter', function () {
+        return function(layers, layerNames) {
+
+            var originalLayerNames = Object.keys(layers);
+
+            angular.forEach(originalLayerNames, function(layerName) {
+
+                if ( layerNames.indexOf(layerName) < 0 ) {
+                    console.log(layers[layerName]);
+                    delete layers[layerName];
+                }
+
+            });
+
+            return layers;
+
+        };
+    })
     .controller('crsInfoPanelDirectiveController', function ( $scope, $element, $window, $timeout ) {
 
         $scope.toggleInfoPanel = function () {
@@ -313,7 +331,7 @@ crsVisualisations
 
 
     })
-    .controller('crsMapDirectiveController', [ "$scope", "leafletData", "leafletBoundsHelpers", function ( $scope, leafletData, leafletBoundsHelpers, visualisationStatus ) {
+    .controller('crsMapDirectiveController', [ "$scope", "leafletData", "leafletBoundsHelpers", "$filter", function ( $scope, leafletData, leafletBoundsHelpers, $filter, visualisationStatus ) {
         // Chart drawing logic goes in here
         $scope.loadMaps = function(data) {
             // D3
@@ -416,6 +434,7 @@ crsVisualisations
                     // Primary layers
 
                     var geojson = {};
+                    $scope.visibleLayers = [];
 
                     // Fix format of layers to match the Leaflet directive
                     for ( var primarylayer in mapObject.primarylayers ) {
@@ -483,35 +502,19 @@ crsVisualisations
                                             return marker;
 
                                         },
-                                        onEachFeature: function(feature, layer) {
-                                            layer._leaflet_id = feature.id;
-                                        },
                                         layer: layerName,
-                                        type: 'geoJSON',
-                                        filter: function (feature) {
-                                            if ( feature.properties.hide ) {
-                                                return false;
-                                            } else {
-                                                var layerName = feature.layer;
-
-                                                if ( typeof(layerName) != 'undefined' ) {
-                                                    var associatedLayer = $scope.layers.overlays[layerName];
-                                                    if ( typeof(associatedLayer) != 'undefined' ) {
-                                                        return associatedLayer.visible;
-                                                    }
-                                                }
-                                                return true;
-                                            }
-                                        }
+                                        type: 'geoJSON'
                                     };
                                     geojson[layerName] = thisGeoJSON;
 
-                                    overlays[layerName] = {
-                                        name: thisPrimaryLayer.title,
-                                        type: 'group',
-                                        visible: true
-                                    };
-                                    overlays.count++;
+                                    //overlays[layerName] = {
+                                    //    name            : thisPrimaryLayer.title,
+                                    //    type            : 'group',
+                                    //    visible         : true
+                                    //};
+                                    //overlays.count++;
+
+                                    $scope.visibleLayers.push(layerName);
                                 }
                             }
                         }
@@ -533,12 +536,24 @@ crsVisualisations
                         });
                     }
 
-
-
-
-                    leafletData.getMap().then(function(map) {
+                    leafletData.getMap('leafletmap').then(function(map) {
                         //Access the map object
-                        //$scope.geojson
+                        $scope.map = map;
+
+                        map.on('overlayadd overlayremove', function (event, layer) {
+                            // An overlay has been toggled. Refresh the geoJSON layers
+
+                            // TODO: Make this work properly
+
+                            $scope.$apply(function(){
+                                $scope.visibleLayers = ["geojson20"];
+                                $scope.geojson = $filter('geoJsonFilter')($scope.geojson, $scope.visibleLayers);
+                            });
+
+                            $scope.geojson = $filter('geoJsonFilter')($scope.geojson, $scope.visibleLayers);
+
+                        });
+
                     });
 
                     $scope.$on("leafletDirectiveMap.geojsonMouseover", function(ev, feature, leafletEvent) {
@@ -589,16 +604,10 @@ crsVisualisations
 
         $scope.highlightNode = function ( nodeId ) {
 
-            leafletData.getMap().then(function(map) {
-
-                console.log(map);
-                //Access the map object
-                var feature = $scope.geojson.getLayer(nodeId);
-                console.log(feature);
-
-            });
-
-
+                //console.log(map);
+                ////Access the map object
+                //var feature = $scope.geojson.getLayer(nodeId);
+                //console.log(feature);
 
         };
 

@@ -1,10 +1,10 @@
-app.filter('orderObjectBy', function() {
+app.filter('orderObjectBy', function () {
     return function(items, field, reverse) {
 
-            var filtered = [];
-            angular.forEach(items, function(item) {
-                filtered.push(item);
-            });
+        var filtered = [];
+        angular.forEach(items, function(item) {
+            filtered.push(item);
+        });
 
         if( field ) {
 
