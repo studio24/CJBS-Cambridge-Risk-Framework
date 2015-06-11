@@ -1,4 +1,33 @@
 angular.module('crsNavigation', [])
+    .controller('crsProjectFiltersDirectiveController', function ( $scope, $state, $element, $window, threats, threatclasses, typecodes ) {
+
+        console.log('Project filters scope: ',$scope);
+        $scope.state = $state;
+
+        threats.getList().then(function( data ) {
+            $scope.threatsList = data;
+        });
+        threatclasses.getList().then(function( data ) {
+            $scope.threatclassesList = data;
+        });
+        typecodes.getList().then(function( data ) {
+            $scope.typecodesList = data;
+        });
+
+
+
+    })
+    .directive('crsProjectFilters', function() {
+        return {
+            restrict: 'AE',
+            replace: true,
+            templateUrl: 'directives/project-filters.html',
+            scope: {
+                filters : '='
+            },
+            controller: 'crsProjectFiltersDirectiveController'
+        };
+    })
     .controller('crsSectionNavigationDirectiveController', function ( $scope, $state, $element, $window ) {
 
         console.log('Section navigation scope: ',$scope);

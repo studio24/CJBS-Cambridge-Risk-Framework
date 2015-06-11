@@ -3,9 +3,9 @@
         <div class="search">
             <input type="text" ng-model="filters.search" placeholder="Search" />
         </div>
-        <div class="select">
-            <ui-select ng-model="filters.search" search-enabled="{{sections.length > 9}}">
-                <ui-select-match placeholder="Legend">Legend</span></ui-select-match>
+        <div class="select" ng-if="legend && legend.length > 0">
+            <ui-select ng-model="filters.search" search-enabled="{{legend.length > 9}}">
+                <ui-select-match allow-clear="true" placeholder="Legend">Legend</ui-select-match>
                 <ui-select-choices repeat="entry.legendLabel as entry in legend track by $index">
                     <span class="legend-indicator" ng-attr-style="background-color: {{ entry.fillColor }}" ng-bind="styledefinition.nodestyles[entry.style].legendLabel"></span>
                     <span ng-bind-html="entry.legendLabel | highlight: $select.search"></span>
@@ -14,9 +14,9 @@
         </div>
         <div class="select sorting">
             <div class="sort-field">
-                <ui-select ng-model="filters.order" search-enabled="{{sections.length > 9}}">
-                    <ui-select-match placeholder="Sort by">Sort by <span class="selected-sort-field" ng-bind="$select.selected.title"></span></ui-select-match>
-                    <ui-select-choices repeat="header.index as header in columnheaders | filter: header.show track by $index">
+                <ui-select ng-model="filters.order" search-enabled="{{columnheaders.length > 9}}">
+                    <ui-select-match allow-clear="true" placeholder="Sort by">Sort by <span class="selected-sort-field" ng-bind="$select.selected.title"></span></ui-select-match>
+                    <ui-select-choices repeat="header.index as header in columnheaders | filter: header.show track by header.index">
                         <div ng-bind-html="header.title | highlight: $select.search"></div>
                     </ui-select-choices>
                 </ui-select>
@@ -30,9 +30,9 @@
         <li class="entry" ng-attr-title="{{styledefinition.nodestyles[entry.style].legendLabel}}" ng-repeat="entry in data | filter:filters.search:strict | orderObjectBy: filters.order:filters.ascending" ng-class="{ active: entry.id == visualisationStatus.selected }" ng-click="selectEntry( entry.id )">
             <ul>
                 <li ng-repeat="field in entry.fields" ng-class="{ primary: columnheaders[$index].title == 'Name'}">
-                    <span class="legend-indicator" ng-if="columnheaders[$index].id == 'name'" ng-attr-style="background-color: {{ styledefinition.nodestyles[entry.style].fillColor }}" ng-bind="styledefinition.nodestyles[entry.style].legendLabel"></span>
+                    <span class="legend-indicator" ng-if="styledefinition && columnheaders[$index].id == 'name'" ng-attr-style="background-color: {{ styledefinition.nodestyles[entry.style].fillColor }}" ng-bind="styledefinition.nodestyles[entry.style].legendLabel"></span>
                     <span ng-if="columnheaders[$index].id != 'name'" ng-bind="columnheaders[$index].title + ': '"></span><span ng-bind="field.v"></span>
-                    <span class="filtered-highlight" ng-if="filters.order && columnheaders[filters.order].id != 'name' && columnheaders[$index].id == 'name' && entry.id != selected">[<span ng-bind="entry.fields[filters.order].v"></span>]</span>
+                    <span class="filtered-highlight" ng-if="entry.fields[filters.order].v && columnheaders[filters.order].id != 'name' && columnheaders[$index].id == 'name' && entry.id != selected">[<span ng-bind="entry.fields[filters.order].v"></span>]</span>
                 </li>
             </ul>
         </li>

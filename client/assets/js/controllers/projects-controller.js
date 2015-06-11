@@ -1,5 +1,6 @@
 app.controller('crsRootController', ['$scope', 'Fullscreen', function ( $scope, Fullscreen ) {
 
+    // Add a function to the scope to toggle fullscreen mode.
     $scope.goFullscreen = function () {
 
         if ( Fullscreen.isEnabled() ) {
@@ -30,7 +31,13 @@ app.controller('crsProjectListController', ['$scope', 'projectList', function ( 
     $scope.projects = projectList;
     console.log( 'Projects added to scope:', $scope.projects );
 
-    $scope.searchText = '';
+    // Set the search text as a variable so we can filter by it when the user enters their search terms.
+    $scope.filters = {
+        name            :   '',
+        threat          :   '',
+        threatclass     :   '',
+        typecode        :   ''
+    };
 
 }]);
 
@@ -41,8 +48,6 @@ app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', '$
 
     // If this level has content, it needs to be displayed so add it to the scope. Child levels will overwrite the content when called
     $scope.content = project;
-
-
 
     var parentState = 'project',
         defaultChildState = 'section';

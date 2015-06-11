@@ -117,8 +117,6 @@ crsVisualisations
             $scope.filters.ascending = !$scope.filters.ascending;
         };
 
-
-
         $scope.loadDatalist = function ( _data ) {
 
 
@@ -156,15 +154,17 @@ crsVisualisations
                     var legend = [];
                     //for ( i = 0; i < datalist.data.length; i++ ) {
 
-                    for (var key in datalist.styledefinition.nodestyles) {
-                        if (datalist.styledefinition.nodestyles.hasOwnProperty(key)) {
+                    if (datalist.styledefinition) {
+                        for (var key in datalist.styledefinition.nodestyles) {
+                            if (datalist.styledefinition.nodestyles.hasOwnProperty(key)) {
 
-                            var style = datalist.styledefinition.nodestyles[key];
+                                var style = datalist.styledefinition.nodestyles[key];
 
-                            style.id = key;
+                                style.id = key;
 
-                            legend.push(style);
+                                legend.push(style);
 
+                            }
                         }
                     }
 
@@ -682,89 +682,3 @@ crsVisualisations
             controller: 'crsChartDirectiveController'
         };
     });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// TODO: Keep an eye on the leaflet directive project and update to use this code when a vector or GeoJSON layer is added
-//if ( typeof(thisPrimaryLayer.geojson) != 'undefined' ) {
-//
-//    if ( typeof(thisPrimaryLayer.geojson.features) != 'undefined' ) {
-//
-//        thisPrimaryLayer.geojson.name = "GeoJSON data";
-//
-//        var layerName = 'geojson' + primarylayer;
-//
-//        thisGeoJSON = {
-//            data: thisPrimaryLayer.geojson,
-//            style: function (feature) {
-//
-//                // Check what kind of shape this is
-//                if ( typeof(feature.properties.nodestyle) != 'undefined' ) {
-//
-//                    // Apply node styles
-//                    var styles = mapObject.styledefinition.nodestyles[feature.properties.nodestyle] || {};
-//                    styles.opacity = 1;
-//                    styles.fillOpacity = 1;
-//                    styles.stroke = 0;
-//
-//                    return styles;
-//
-//                } else if ( typeof(feature.properties.linkstyle) != 'undefined' ) {
-//
-//                    // Apply link styles
-//                    var styles = mapObject.styledefinition.linkstyles[feature.properties.linkstyle] || {};
-//                    styles.opacity = 0.2;
-//                    styles.weight = 1;
-//
-//                    return styles;
-//
-//                }
-//
-//            },
-//            pointToLayer: function (feature, latlng) {
-//
-//                marker = new L.CircleMarker(latlng, {radius: feature.properties.size * 3, fillOpacity: 0.85});
-//
-//                feature.layer = layerName;
-//
-//                if (feature.properties.title !== undefined) {
-//                    marker.bindLabel('<span style="color:' + newProperties.titleColor + '">' + feature.properties.title + '</span>', { noHide: true });
-//                }
-//
-//                //marker.on('click', function(e) {
-//                //
-//                //    var markerId = e.target._id;
-//                //
-//                //    $scope.$apply(function() {
-//                //        $scope.toggleCompanyById(markerId);
-//                //    });
-//                //
-//                //});
-//
-//                return marker;
-//
-//            }
-//        };
-//
-//
-//
-//    }
-//}

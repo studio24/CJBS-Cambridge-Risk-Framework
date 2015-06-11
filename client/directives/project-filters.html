@@ -1,0 +1,60 @@
+<nav class="grid-block project-filters">
+    <div class="filters grid-content">
+
+        <h2>Filter projects</h2>
+
+        <!--Search by keyword-->
+        <div class="search">
+            <input type="text" ng-model="filters.name" placeholder="Project name" />
+        </div>
+
+        <!--Filter by threat-->
+        <div class="select">
+            <ui-select ng-model="filters.threat" search-enabled="{{threatsList.length > 9}}">
+                <ui-select-match allow-clear="true" placeholder="Threat">
+                    <div ng-if="filters.threat">
+                        <img ng-if="$select.selected.iconurl" ng-src="{{$select.selected.iconurl}}" alt=""/>
+                        <span ng-bind="$select.selected.name"></span>
+                    </div>
+                </ui-select-match>
+                <ui-select-choices repeat="threat.id as threat in threatsList track by $index">
+                    <img ng-if="threat.iconurl" ng-src="{{threat.iconurl}}" alt=""/>
+                    <span ng-bind="threat.name"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+
+        <!--Filter by threat class-->
+        <div class="select">
+            <ui-select ng-model="filters.threatclass" search-enabled="{{threatclassesList.length > 9}}">
+                <ui-select-match allow-clear="true" placeholder="Threat Class">
+                    <div ng-if="filters.threatclass">
+                        <img ng-if="$select.selected.iconurl" ng-src="{{$select.selected.iconurl}}" alt=""/>
+                        <span ng-bind="$select.selected.name"></span>
+                    </div>
+                </ui-select-match>
+                <ui-select-choices repeat="threatclass.id as threatclass in threatclassesList track by $index">
+                    <img ng-if="threatclass.iconurl" ng-src="{{threatclass.iconurl}}" alt=""/>
+                    <span ng-bind="threatclass.name"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+
+        <!--Filter by type code-->
+        <div class="select">
+            <ui-select ng-model="filters.typecode" search-enabled="{{typecodesList.length > 9}}">
+                <ui-select-match allow-clear="true" placeholder="Type codes">
+                    <div ng-if="filters.typecode">
+                        <img ng-if="$select.selected.iconurl" ng-src="{{$select.selected.iconurl}}" alt=""/>
+                        <span ng-bind="$select.selected.name"></span>
+                    </div>
+                </ui-select-match>
+                <ui-select-choices repeat="typecode.id as typecode in typecodesList track by $index">
+                    <img ng-if="typecode.iconurl" ng-src="{{typecode.iconurl}}" alt=""/>
+                    <span ng-bind="typecode.name"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+
+    </div>
+</nav>

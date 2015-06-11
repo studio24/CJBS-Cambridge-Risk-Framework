@@ -1,5 +1,5 @@
-<nav class="grid-block section-navigation">
-    <div class="section-dropdown grid-block shrink">
+<nav class="section-navigation">
+    <div class="section-dropdown">
         <ui-select ng-model="state.params.sectionNumber" on-select="goToSection($select.selected.sectionnumber)" search-enabled="{{sections.length > 9}}">
             <ui-select-match placeholder="Select a section">Section: <span class="selected-section" ng-bind="sections[$select.selected.sectionnumber-1].title"></span></ui-select-match>
             <ui-select-choices repeat="section.sectionnumber as section in sections | filter: $select.search track by $index">

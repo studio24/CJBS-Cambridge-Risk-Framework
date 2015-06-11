@@ -1,5 +1,6 @@
 'use strict';
 
+// Initialise the app with dependencies.
 var app = angular.module('application', [
     'ui.router',
     'ngSanitize',
@@ -7,21 +8,19 @@ var app = angular.module('application', [
     'crsNavigation',
     'ui.select',
     'FBAngular',
-
-    //foundation
     'foundation',
-
     'restangular'
     ])
     .config(config)
     .run(run)
 ;
 
+// Inject dependencies for global services such as error messages and touch interactions.
 app.$inject = ['FoundationApi'];
 app.$inject = ['Hammer'];
 
+// Set configuration for global modules.
 config.$inject = ['$urlRouterProvider', '$locationProvider', '$stateProvider', 'RestangularProvider', 'uiSelectConfig'];
-
 function config($urlProvider, $locationProvider, $stateProvider, RestangularProvider, uiSelectConfig) {
 
     uiSelectConfig.theme = 'select2';
@@ -36,6 +35,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
         return newResponse;
     });
 
+    // Set state hierarchy.
     $stateProvider
         .state('root', {
             url: '',
@@ -170,14 +170,11 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                     controller: 'crsVisualisationController'
                 }
             }
-        })
-        .state('settings', {
-            url: '/settings',
-            templateUrl : 'templates/settings.html'
         });
 
         $urlProvider.otherwise('/');
 
+        // TODO: Activate HTML5 mode and test before deploying.
         $locationProvider.html5Mode({
             enabled: false,
             requireBase: false
@@ -186,15 +183,18 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
         $locationProvider.hashPrefix('!');
     }
 
-function run($rootScope, $timeout, $state, utilsService, FoundationApi) {
+function run($rootScope, $timeout, $state, utilsService) {
 
+    // Set global variables so the app can access its loading state from anywhere.
     $rootScope.state = {
         loading     : false,
         bodyClass   : ""
     };
 
+    // Activate Fastclick to eliminate the 0.3s delay between touch and response on touch devices.
     FastClick.attach(document.body);
 
+    // Set classes at the start of state transitions to activate CSS animations.
     $rootScope
         .$on('$stateChangeStart',
         function(event, toState, toParams, fromState, fromParams){
@@ -203,12 +203,14 @@ function run($rootScope, $timeout, $state, utilsService, FoundationApi) {
             console.log('State changing from "' + fromState.name + '" to "' + toState.name + '"...');
         });
 
+    // Set and remove classes when state changes come to an end to animate the new content in.
     $rootScope
         .$on('$stateChangeSuccess',
         function(event, toState, toParams, fromState, fromParams){
             $rootScope.state.loading = false;
             $rootScope.state.bodyClass = 'loaded ' + toState.name.split('.').join('-');
-            // Set timeout before removing the section class to allow for CSS animation.
+
+            // Set timeout before removing the section class to allow the CSS animation to finish.
             $timeout(function () {
                 $rootScope.state.bodyClass = 'loaded';
             },300);
@@ -221,7 +223,7 @@ function run($rootScope, $timeout, $state, utilsService, FoundationApi) {
             //});
         });
 
-    // Report errors in state transitions
+    // Report errors in state transitions.
     $rootScope.$on("$stateChangeError", function (event, toState, toParams, fromState, fromParams, error) {
 
         var errorMessage = 'Error on StateChange from: "' + (fromState && fromState.name) + '" to:  "'+ toState.name + '", err:' + error.message + ", code: " + error.status;
@@ -242,20 +244,23 @@ function run($rootScope, $timeout, $state, utilsService, FoundationApi) {
 
         utilsService.notify({
             title       : 'State change error',
-            content     : 'Could not change from "' + ((fromState && fromState.name != '') ? fromState.name : 'no state') + '" to  "'+ (toState && toState.name) + '". ' +
-                'Reverting to previous state.',
-            color       : 'error'
+            color       : 'error',
+            content     : 'Could not change from "' +
+            ((fromState && fromState.name != '') ? fromState.name : 'no state') +
+            '" to  "'+ (toState && toState.name) + '". ' +
+            'Reverting to previous state.'
+
         });
 
         //$state.reload();
 
-        // check if we tried to go to a home state, then we cannot redirect again to the same
-        // homestate, because that would lead to a loop
-        //if (toState.name === 'home') {
-        //    return $state.go('error');
-        //} else {
-        //    return $state.go('home');
-        //}
+        // If we attempted to load the home state, we cannot redirect to the same
+        // home state, because that would lead to a loop.
+        if (toState.name === 'home') {
+            return $state.go('error');
+        } else {
+            return $state.go('home');
+        }
 
     });
 }

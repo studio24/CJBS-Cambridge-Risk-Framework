@@ -1,19 +1,22 @@
-<div class="grid-block shrink project-title-bar">
-    <div class="grid-block project-title">
-        <h1>Cambridge Risk Framework</h1>
-    </div>
-    <div class="grid-block shrink">
-        <a class="project-control project-fullscreen" ng-click="goFullscreen()">
+<div class="grid-block shrink">
+    <div class="project-title-bar">
+        <a class="project-control project-fullscreen right-align" ng-click="goFullscreen()">
             <i ng-show="!fullscreen" class="fa fa-expand"></i>
             <i ng-show="fullscreen" class="fa fa-compress"></i>
         </a>
+        <a class="info-modal-toggle right-align">
+            <img src="/assets/img/crs-logo.png" alt="University of Cambridge Judge Business School Centre for Risk Studies"/>
+        </a>
+        <div class="project-title">
+            <h1>Cambridge Risk Framework</h1>
+        </div>
     </div>
 </div>
 <div class="grid-block" ng-if="projects.length > 0">
-    <div class="small-12 medium-8 large-10 grid-block">
+    <div class="small-12 medium-8 large-9 grid-block">
         <nav class="grid-content project-navigation" >
             <ul class="grid-block project-list small-up-1 medium-up-2 large-up-3">
-                <li ng-repeat="project in projects | filter:searchText" class="grid-content project-tile">
+                <li ng-repeat="project in projects | filter:filters:strict" class="grid-content project-tile">
                     <a class="project-link" ui-sref="project({ projectId: project.id })">
                         <img class="project-thumbnail" ng-if="project.image" ng-src="{{project.image}}">
                         <img class="project-thumbnail" ng-if="!project.image" src="http://placehold.it/640x360">
@@ -24,13 +27,7 @@
             </ul>
         </nav>
     </div>
-    <div id="project-filters" class="hide-for-small show-for-medium medium-4 large-2 grid-block">
-        <div class="grid-content filters">
-            <div class="content">
-                <h3>Filter projects</h3>
-                <label for="keyword-filter">Filter by keywords</label>
-                <input id="keyword-filter" ng-model="searchText" placeholder="Enter keywords">
-            </div>
-        </div>
+    <div id="project-filters" class="hide-for-small show-for-medium medium-4 large-3 grid-block">
+        <crs-project-filters filters="filters"></crs-project-filters>
     </div>
 </div>

@@ -24,6 +24,18 @@ app.factory('phases', function ( apiRequest ) {
     return apiRequest.all('phases');
 });
 
+app.factory('threats', function ( apiRequest ) {
+    return apiRequest.all('threats');
+});
+
+app.factory('threatclasses', function ( apiRequest ) {
+    return apiRequest.all('threatclasses');
+});
+
+app.factory('typecodes', function ( apiRequest ) {
+    return apiRequest.all('typecodes');
+});
+
 // Filters
 
 app.filter('getByAttr', function() {
