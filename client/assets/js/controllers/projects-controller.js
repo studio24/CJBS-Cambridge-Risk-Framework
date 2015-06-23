@@ -1,4 +1,4 @@
-app.controller('crsRootController', ['$scope', 'Fullscreen', function ( $scope, Fullscreen ) {
+app.controller('crsRootController', ['$scope', 'Fullscreen', 'utilsService', function ( $scope, Fullscreen, utilsService ) {
 
     // Add a function to the scope to toggle fullscreen mode.
     $scope.goFullscreen = function () {
@@ -24,6 +24,13 @@ app.controller('crsRootController', ['$scope', 'Fullscreen', function ( $scope, 
 
     });
 
+    $scope.aboutApp = function(){
+        utilsService.modal({
+            name        :   'Cambridge Risk Framework',
+            description :   'Lorem ispum dolor sit amet con sectetur adepiscing elit...'
+        });
+    };
+
 }]);
 
 app.controller('crsProjectListController', ['$scope', 'projectList', function ( $scope, projectList ) {
@@ -41,13 +48,19 @@ app.controller('crsProjectListController', ['$scope', 'projectList', function ( 
 
 }]);
 
-app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', '$state', '$stateParams', function(FoundationApi, $scope, project, $state, $stateParams) {
+app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', 'projectSummary', '$state', '$stateParams', 'utilsService', function(FoundationApi, $scope, project, projectSummary, $state, $stateParams, utilsService) {
 
     $scope.project = project;
     console.log( 'Project added to scope:', $scope.project );
 
+    $scope.projectSummary = $scope.projectSummary || projectSummary;
+
     // If this level has content, it needs to be displayed so add it to the scope. Child levels will overwrite the content when called
     $scope.content = project;
+
+    $scope.showSummary = function(){
+        utilsService.modal($scope.projectSummary);
+    };
 
     var parentState = 'project',
         defaultChildState = 'section';
@@ -62,15 +75,6 @@ app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', '$
             {
                 'location'   :   'replace'
             });
-    } else {
-
-        $state.go('section.visualisation', {
-                'visualisationType': 'visualisation'
-            },
-            {
-                'location'   :   'replace'
-            });
-
     }
 
 
@@ -97,49 +101,9 @@ app.controller('crsSectionController', function ( $scope, section, $state ) {
                 'phaseNumber': 1
             });
 
-        } else {
-
-            $state.go('section.visualisation', {
-                    'visualisationType': 'visualisation'
-                },
-                {
-                    'location'   :   'replace'
-                });
-
         }
 
     }
-
-});
-
-app.controller('crsPhaseController', function ( $scope, phase, $state ) {
-
-    $scope.phase = phase;
-    console.log( 'Phase added to scope:', $scope.phase );
-
-    // Load the phase content into the scope
-    $scope.content = phase;
-
-    var parentState = 'phase',
-        defaultChildState = 'phase.visualisation';
-
-    // Check if the phase has been accessed directly
-    if($state.current.name.substr(-parentState.length) === parentState) {
-
-        $state.go('phase.visualisation', {
-                'visualisationType': 'visualisation'
-            },
-            {
-                'location'   :   'replace'
-            });
-
-    }
-
-});
-
-app.controller('crsVisualisationController', ['$scope', '$stateParams', '$timeout', function ( $scope, $stateParams, $timeout ) {
-
-    console.log('Loading...');
 
     var defaultVisualisation;
 
@@ -159,7 +123,9 @@ app.controller('crsVisualisationController', ['$scope', '$stateParams', '$timeou
 
         var lookup = {
             graph   :   'graphs',
-            list    :   'layers'
+            list    :   'layers',
+            map     :   'maps',
+            chart   :   'charts'
         };
         for ( var i = 0; i < defaultVisualisations.length; i++ ) {
             if ( lookup[defaultVisualisations[i]] == visualisationType ) {
@@ -202,9 +168,9 @@ app.controller('crsVisualisationController', ['$scope', '$stateParams', '$timeou
     }
 
     $scope.$watch('activeCount', function() {
-        $timeout(function(){
+        //$timeout(function(){
             window.dispatchEvent(new Event('resize'));
-        });
+        //});
 
     });
 
@@ -232,4 +198,109 @@ app.controller('crsVisualisationController', ['$scope', '$stateParams', '$timeou
 
     };
 
-}]);
+});
+
+app.controller('crsPhaseController', function ( $scope, phase, $state ) {
+
+    $scope.phase = phase;
+    console.log( 'Phase added to scope:', $scope.phase );
+
+    // Load the phase content into the scope
+    $scope.content = phase;
+
+    var parentState = 'phase';
+
+    var defaultVisualisation;
+
+    if ( typeof($scope.content.defaultvisibility) != 'undefined' ) {
+
+        defaultVisualisations = $scope.content.defaultvisibility;
+
+    } else {
+
+        defaultVisualisations = [Object.keys( $scope.content.visualisations )[0]];
+
+    }
+
+    var setDefaultState = function (visualisationType) {
+
+        var visibleByDefault = false;
+
+        var lookup = {
+            graph   :   'graphs',
+            list    :   'layers',
+            map     :   'maps',
+            chart   :   'charts'
+        };
+        for ( var i = 0; i < defaultVisualisations.length; i++ ) {
+            if ( lookup[defaultVisualisations[i]] == visualisationType ) {
+                visibleByDefault = true;
+                return visibleByDefault;
+            }
+        }
+
+        return visibleByDefault;
+
+    };
+
+
+    angular.extend($scope, {
+        visualisations  : [],
+        activeCount     : 0
+    });
+
+    $scope.visualisationStatus = {
+        count: 0
+    };
+
+    for (var key in $scope.content.visualisations) {
+
+        if ($scope.content.visualisations.hasOwnProperty(key)) {
+
+            var visualisation = {
+                visualisationType: key,
+                visualisationUrl: $scope.content.visualisations[key],
+                active: setDefaultState(key)
+            };
+
+            $scope.visualisations.push(visualisation);
+
+            if ( visualisation.active ) {
+                $scope.visualisationStatus.count++;
+            }
+
+        }
+    }
+
+    $scope.$watch('activeCount', function() {
+        //$timeout(function(){
+        window.dispatchEvent(new Event('resize'));
+        //});
+
+    });
+
+    $scope.toggleVisualisation = function ( _visualisation ) {
+
+        if ( _visualisation.active ) {
+
+            if ( $scope.visualisationStatus.count > 1 ) {
+
+                _visualisation.active = false;
+                $scope.visualisationStatus.count--;
+
+            }
+
+        } else {
+
+            if ( $scope.visualisationStatus.count < 3 ) {
+
+                _visualisation.active = true;
+                $scope.visualisationStatus.count++;
+
+            }
+
+        }
+
+    };
+
+});

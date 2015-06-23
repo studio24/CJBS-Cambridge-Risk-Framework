@@ -1,0 +1,27 @@
+<div id="root-container" class="grid-block vertical">
+    <div class="grid-block shrink">
+        <div class="project-title-bar">
+            <a class="project-control project-fullscreen right-align" ng-click="goFullscreen()">
+                <i ng-show="!fullscreen" class="fa fa-expand"></i>
+                <i ng-show="fullscreen" class="fa fa-compress"></i>
+            </a>
+            <a class="info-modal-toggle right-align" ng-click="aboutApp()">
+                <img src="/assets/img/crs-logo.png" alt="University of Cambridge Judge Business School Centre for Risk Studies"/>
+            </a>
+            <div class="project-title">
+                <h1>Cambridge Risk Framework</h1>
+            </div>
+        </div>
+    </div>
+    <div class="grid-block">
+        <div class="grid-content fatal-error" >
+            <h1>Error</h1>
+            <h2>Could not resolve requested state</h2>
+            <p>
+                The Cambridge Risk Framework app has been unable to retrieve the requested information.
+                This could indicate either a fault on the CRF network or a loss of Internet connection.
+                Please check your connection and then head back the <a ui-sref="home" >project list</a>.
+            </p>
+        </div>
+    </div>
+</div>

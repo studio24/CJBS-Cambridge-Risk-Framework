@@ -15,7 +15,7 @@
         <div class="select sorting">
             <div class="sort-field">
                 <ui-select ng-model="filters.order" search-enabled="{{columnheaders.length > 9}}">
-                    <ui-select-match allow-clear="true" placeholder="Sort by">Sort by <span class="selected-sort-field" ng-bind="$select.selected.title"></span></ui-select-match>
+                    <ui-select-match allow-clear="true" placeholder="Sort by"><span class="selected-sort-field" ng-bind="'Sort by ' + $select.selected.title"></span></ui-select-match>
                     <ui-select-choices repeat="header.index as header in columnheaders | filter: header.show track by header.index">
                         <div ng-bind-html="header.title | highlight: $select.search"></div>
                     </ui-select-choices>

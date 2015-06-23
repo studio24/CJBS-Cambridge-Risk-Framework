@@ -9,7 +9,7 @@
         </div>
 
         <!--Filter by threat-->
-        <div class="select">
+        <div class="select" ng-if="threatsList && threatsList.length > 0">
             <ui-select ng-model="filters.threat" search-enabled="{{threatsList.length > 9}}">
                 <ui-select-match allow-clear="true" placeholder="Threat">
                     <div ng-if="filters.threat">
@@ -25,7 +25,7 @@
         </div>
 
         <!--Filter by threat class-->
-        <div class="select">
+        <div class="select" ng-if="threatclassesList && threatclassesList.length > 0">
             <ui-select ng-model="filters.threatclass" search-enabled="{{threatclassesList.length > 9}}">
                 <ui-select-match allow-clear="true" placeholder="Threat Class">
                     <div ng-if="filters.threatclass">
@@ -41,7 +41,7 @@
         </div>
 
         <!--Filter by type code-->
-        <div class="select">
+        <div class="select" ng-if="typecodesList && typecodesList.length > 0">
             <ui-select ng-model="filters.typecode" search-enabled="{{typecodesList.length > 9}}">
                 <ui-select-match allow-clear="true" placeholder="Type codes">
                     <div ng-if="filters.typecode">

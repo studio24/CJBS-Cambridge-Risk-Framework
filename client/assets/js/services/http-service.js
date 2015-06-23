@@ -1,9 +1,34 @@
-app.factory('APIRestangular', function(Restangular) {
+app.factory('APIRestangular', function(Restangular, utilsService) {
     return Restangular.withConfig(function(RestangularConfigurer) {
         RestangularConfigurer.setBaseUrl('http://sybil-api.cambridgeriskframework.com/api').setRequestSuffix('/');
         RestangularConfigurer.setResponseExtractor(function(response) {
             var newResponse = response.originalElement;
             return newResponse;
+        });
+        RestangularConfigurer.setErrorInterceptor(function(response, deferred, responseHandler) {
+
+            var responseTitle = function () {
+                if (response.status && response.status != 0) {
+                    return 'API connection error ' + response.status;
+                } else {
+                    return 'Unknown API connection error';
+                }
+            };
+
+            var responseText = function () {
+                if (response.statusText && response.statusText != '') {
+                    return '<br/>' + response.statusText;
+                } else {
+                    return '';
+                }
+            };
+
+            utilsService.notify({
+                title       : responseTitle,
+                color       : 'error',
+                content     : 'Could not retrieve API data from ' + response.config.url + '.' + responseText()
+            });
+            return true;
         });
     });
 });

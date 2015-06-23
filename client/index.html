@@ -20,8 +20,8 @@
     </script>
 
     <script src="/assets/js/app.js"></script>
-    <script src="/assets/js/services/http-service.js"></script>
     <script src="/assets/js/services/utils-service.js"></script>
+    <script src="/assets/js/services/http-service.js"></script>
     <script src="/assets/js/services/filters.js"></script>
     <script src="/assets/js/controllers/projects-controller.js"></script>
     <script src="/assets/js/directives/visualisation-directive.js"></script>
@@ -31,11 +31,12 @@
     <div class="grid-frame" ui-view="content"></div>
     <zf-notification-set id="main-notifications" position="top-right"></zf-notification-set>
     <zf-modal id="main-modal">
-        <aside class="modal">
-            <a zf-close="" class="close-button">×</a>
-            <h3 ng-bind="modal.title">Modal title</h3>
-            <p ng-bind="modal.content">Modal body copy...</p>
-        </aside>
+        <a zf-close="" class="close-button">×</a>
+        <img ng-src="{{modal.image}}" alt=""/>
+        <h1 ng-bind="modal.name"></h1>
+        <h4 class="description" ng-bind="modal.description"></h4>
+        <a class="info-link" ng-if="modal.helplinkurl" ng-href="{{modal.helplinkurl}}" ng-bind="modal.helplinklabel" target="_blank"></a>
+        <p class="copyright-message" ng-bind-html="modal.copyrightmessage"></p>
     </zf-modal>
 </body>
 </html>

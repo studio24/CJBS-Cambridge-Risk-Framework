@@ -2,7 +2,16 @@
 
     <!-- Main content (chart) panel -->
     <div class="grid-block vertical visualisation-container">
-        <div ui-view="visualisation" class="grid-block visualisation-view"></div>
+        <div class="grid-block vertical">
+            <div class="grid-block visualisation-grid {{'visualisation-grid-' + visualisationStatus.count}}" ng-class="{multiple: visualisationStatus.count > 1}">
+                <crs-visualisation ng-repeat="visualisation in visualisations"
+                                   visualisation-active="visualisation.active"
+                                   visualisation-url="visualisation.visualisationUrl"
+                                   visualisation-type="visualisation.visualisationType"
+                                   visualisation-status="visualisationStatus">
+                </crs-visualisation>
+            </div>
+        </div>
     </div>
 
     <!-- Info panel -->

@@ -1,6 +1,6 @@
 app.factory('utilsService', function ( FoundationApi, $rootScope ) {
     return {
-        alert: function ( options ) {
+        modal: function ( options ) {
             $rootScope.modal = options;
             FoundationApi.publish('main-modal', 'show');
         },

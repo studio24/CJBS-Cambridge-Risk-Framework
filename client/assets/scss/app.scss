@@ -118,7 +118,8 @@ nav {
         display: block;
         float: left;
         max-width: 100%;
-        width: 360px;
+        width: auto;
+        min-width: 420px;
 
         .section-dropdown {
             padding: 0 rem-calc(82) 0 0;
@@ -132,6 +133,12 @@ nav {
             }
             .selected-section {
                 color: $color-white;
+                display: block;
+                margin-right: 40px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                word-wrap: break-word;
             }
             .prev-link, .next-link {
                 width: rem-calc(40);
@@ -373,6 +380,21 @@ nav {
     }
     .maps .visualisation-content {
         background-color: #e7eaf3;
+
+        .leaflet-container.selected .leaflet-overlay-pane {
+            svg {
+                circle, path {
+                    transition-property: all;
+                    transition-duration: 0.3s;
+                    opacity: 0.3;
+                }
+                .selected {
+                    stroke: $color-white;
+                    stroke-width: 3px;
+                    opacity: 1;
+                }
+            }
+        }
     }
     .layers .visualisation-content {
         background-color: $color-toolbar-dark;
@@ -442,6 +464,7 @@ nav {
         padding: rem-calc(10);
         line-height: rem-calc(20);
         text-align: center;
+        font-weight: 800;
     }
 }
 .legend-indicator {
@@ -545,6 +568,15 @@ nav {
     }
 }
 .select2-chosen {
+    > * {
+        color: $color-white;
+        display: block;
+        margin-right: 40px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        word-wrap: break-word;
+    }
     img {
         height: 28px;
         width: 28px;
@@ -869,14 +901,19 @@ body {
         padding: rem-calc(16) rem-calc(16) 0;
         color: $color-white;
         margin: 0;
-    }
-    .project-thumbnail {
-        width: rem-calc(30);
-        min-width: rem-calc(30);
-        height: rem-calc(30);
-        border: rem-calc(4) solid $color-light-grey;
-        margin-right: rem-calc(10);
-        float: left;
+        cursor: pointer;
+
+        .project-thumbnail {
+            width: rem-calc(30);
+            min-width: rem-calc(30);
+            height: rem-calc(30);
+            border: rem-calc(4) solid $color-light-grey;
+            margin-right: rem-calc(10);
+            float: left;
+        }
+        &:hover .project-thumbnail {
+            border-color: $color-white;
+        }
     }
     .project-control {
         display: block;
@@ -889,6 +926,69 @@ body {
         font-size: 20px;
         border: 1px solid #333437;
         background-color: $color-toolbar-button;
+    }
+    .project-exit {
+        font-weight: 800;
+        font-size: rem-calc(22);
+    }
+}
+.modal-overlay {
+    background-color: rgba(0, 0, 0, 0.85);
+}
+.modal {
+    background-color: $color-toolbar-light;
+    box-shadow: 0 1px 2px black;
+
+    img {
+        margin-bottom: rem-calc(14);
+    }
+    h1 {
+        margin: rem-calc(4) 0 rem-calc(4);
+    }
+    .description {
+        margin: rem-calc(6) 0 rem-calc(4);
+    }
+    .info-link {
+        margin: rem-calc(10) 0 rem-calc(4);
+        display: inline-block;
+    }
+    .copyright-message {
+        color: $color-dark-grey;
+        margin: rem-calc(16) 0 0;
+        font-size: rem-calc(10);
+    }
+    .close-button {
+        color: $color-light-grey;
+
+        &:hover {
+            color: $color-white;
+        }
+    }
+}
+.notification {
+    padding: 0.8rem 1rem;
+    box-shadow: 0 1px 2px $color-black;
+    background-color: $color-white;
+    color: $color-black;
+
+    h1 {
+        font-size: rem-calc(20);
+    }
+    p {
+        font-size: rem-calc(14);
+    }
+    .close-button {
+        color: $color-toolbar-dark;
+        font-size: rem-calc(20);
+
+        &:hover {
+            color: $color-light-grey;
+        }
+    }
+    &.error {
+        h1 {
+            color: $color-dark-red;
+        }
     }
 }
 

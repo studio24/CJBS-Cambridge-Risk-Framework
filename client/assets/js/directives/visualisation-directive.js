@@ -6,9 +6,58 @@ var crsVisualisations = angular.module('crsVisualisations', [
     ]);
 
 crsVisualisations
-    .factory('IJSRestangular', function(Restangular) {
+    .factory('IJSRestangular', function(Restangular, utilsService) {
         return Restangular.withConfig(function(RestangularConfigurer) {
             RestangularConfigurer.setBaseUrl('http://sybil-api.cambridgeriskframework.com').setRequestSuffix('');
+            RestangularConfigurer.setResponseExtractor(function(response) {
+                var newResponse = response.originalElement;
+
+                // The JSON has been accessed successfully but if there is an error from the server, we need to display it.
+                if (newResponse.error) {
+
+                    var errorMessage = function () {
+                        if (newResponse.timestamp) {
+                            return newResponse.error + '. ' +
+                                'Error logged at ' + newResponse.timestamp;
+                        } else {
+                            return newResponse.error;
+                        }
+                    };
+
+                    utilsService.notify({
+                        title       : 'Visualisation URL error',
+                        color       : 'error',
+                        content     : errorMessage()
+                    });
+                }
+                return response;
+            });
+            RestangularConfigurer.setErrorInterceptor(function(response, deferred, responseHandler) {
+
+                // The JSON could not be accessed. Notify the user with a standard error message.
+                var responseTitle = function () {
+                    if (response.status && response.status != 0) {
+                        return 'Visualisation connection error ' + response.status;
+                    } else {
+                        return 'Unknown visualisation connection error';
+                    }
+                };
+
+                var responseText = function () {
+                    if (response.statusText && response.statusText != '') {
+                        return response.statusText;
+                    } else {
+                        return '';
+                    }
+                };
+
+                utilsService.notify({
+                    title       : responseTitle,
+                    color       : 'error',
+                    content     : 'Could not retrieve visualisation data from ' + response.config.url + '. ' + responseText()
+                });
+                return true;
+            });
         });
     })
     .factory('ijsRequest', function ( IJSRestangular ) {
@@ -273,10 +322,153 @@ crsVisualisations
         // Graph drawing logic goes here
         $scope.loadGraphs = function($data) {
 
-            S24.Charts.createForceDirectedGraph('#visualisation', $data.graph1, {
-                width: '100%',
-                height: 1000
-            }, $scope);
+            var container = '#visualisation';
+            var dataset = $data.graph1;
+            var width = d3.select(container)[0][0].clientWidth,
+                height = 800;
+
+            // Setup the required variables
+            var links = [];
+            var nodes = dataset.data.graphdump.nodes.slice();
+            var bilinks = [];
+
+            var forceScale = d3
+                .scale
+                .linear()
+                .domain([2*d3.min(nodes, function(d) { return d.weight || 1 }), 2*d3.max(nodes, function(d) { return d.weight || 1 })])
+                .range([-30,10]);
+
+            // Setup force simulation
+            var force = d3.layout.force()
+                .linkDistance(function (d) {
+                    return (d.target.size || 1) + (d.source.size || 1);
+                })
+                .linkStrength(2)
+                .charge(function(d, i) {
+                    return forceScale(d.weight);
+                })
+                .size([width, height]);
+
+            var svgContainer;
+
+            var zoomed = function() {
+                svgContainer.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+            };
+
+            var zoom = d3.behavior.zoom()
+                .scaleExtent([0.5, 8])
+                .on("zoom", zoomed);
+
+            var svg = d3.select(container).append('svg')
+                .attr('height', height)
+                .attr('width', '100%')
+                .call(zoom);
+
+            svgContainer = svg.append('g');
+
+            // Loop through the dataset and construct the nodes and links
+            dataset.data.graphdump.links.forEach(function(link) {
+                var s = nodes[link.source],
+                    t = nodes[link.target],
+                    i = {};
+                var opacity = 0.01 * (link.weight / 50);
+                var style = dataset.styledefinition.linkstyles[link.linkstyle];
+
+                nodes.push(i);
+                links.push({source: s, target: i}, {source: i, target: t});
+                bilinks.push([s, i, t, {
+                    'opacity': opacity,
+                    'style': style
+                }]);
+            });
+
+            // Loop through nodes and get their style definition
+            nodes.forEach(function(node) {
+                node.style = dataset.styledefinition.nodestyles[node.nodestyle];
+
+                console.log(dataset.parameters.algorithm);
+
+                if ( dataset.parameters.algorithm != 'd3_force_directed' ) {
+                    node.fixed = true;
+                }
+
+            });
+
+            // Start the force directed graph
+            force.nodes(nodes)
+                .links(links)
+                .start();
+
+            // Create the links
+            var link = svgContainer.selectAll('.link')
+                .data(bilinks)
+                .enter().append('path')
+                .attr('class', 'link')
+                .attr('stroke', function(d) {
+                    if (typeof(d[3].style) != 'undefined') {
+                        return d[3].style.color;
+                    } else {
+                        return '#ffffff';
+                    }
+                })
+                .attr('opacity', function(d) {
+                    return d[3].opacity;
+                });
+
+            // Create the blank node
+            var node = svgContainer.selectAll('.node')
+                .data(dataset.data.graphdump.nodes)
+                .enter().append('g')
+                .attr('class', 'node')
+                .attr('id', function (d) {
+                    return 'node' + d.guid;
+                });
+
+            // Add the circle to the node
+            /*node.append('circle')
+             .attr('r', function (d) { return (3 * d.size) + 15; })
+             .attr('fill-opacity', '0')
+             .attr('stroke', 'white');*/
+            node.append('text')
+                .text(function (d) {
+                    return d.title;
+                })
+                .attr('fill', function (d) {
+                    return d.style.titleColor;
+                })
+                .attr('transform', function (d) {
+                    var left = -1 * this.getBoundingClientRect().width / 2;
+                    var bottomPaddingFromNode = 3;
+                    var top = d.size * 3 + this.getBoundingClientRect().height + bottomPaddingFromNode;
+                    return 'translate(' + left + ',' + top + ')';
+                });
+            node.append('circle')
+                .attr('fill', function(d) {
+                    if (typeof(d.style) != 'undefined') {
+                        return d.style.fillColor;
+                    } else {
+                        return '#ffffff';
+                    }
+                })
+                .attr('r', function (d) { return 3 * d.size; });
+            node.on('click', function(d, i) {
+                $scope.$apply(function() {
+                    $scope.selected = d.guid;
+                })
+            });
+
+
+            // Move around the link and nodes on each tick
+            force.on('tick', function() {
+                link.attr('d', function(d) {
+                    return "M" + d[0].x + "," + d[0].y
+                        + " S" + (d[1].x) + "," + (d[1].y)
+                        + " " + d[2].x + "," + d[2].y;
+                });
+                node.attr('transform', function(d) {
+                    return 'translate(' + d.x + ',' + d.y + ')';
+                });
+            });
 
             angular.element($window).bind('resize', function () {
                 // Resize
@@ -358,7 +550,7 @@ crsVisualisations
 
                     var center = {};
 
-                    center.zoom     =   mapObject.zoom;
+                    center.zoom     =   mapObject.zoom || 2;
                     center.lat      =   mapObject.center[0];
                     center.lng      =   mapObject.center[1];
 
@@ -465,9 +657,16 @@ crsVisualisations
 
                                                 // Apply node styles
                                                 var styles = mapObject.styledefinition.nodestyles[feature.properties.nodestyle] || {};
+
                                                 styles.opacity = 1;
                                                 styles.fillOpacity = 1;
                                                 styles.stroke = 0;
+
+                                                if ($scope.visualisationStatus.selected && feature.id == $scope.visualisationStatus.selected) {
+                                                    styles.className = 'selected';
+                                                } else {
+                                                    styles.className = '';
+                                                }
 
                                                 return styles;
 
@@ -578,6 +777,12 @@ crsVisualisations
 
                 }
             }
+        };
+
+        $scope.highlightNode = function ( nodeId ) {
+            var nodes = d3.selectAll('.node');
+            nodes.classed('selected', false);
+            d3.select('#node' + nodeId).classed('selected', true);
         };
 
         $scope.loadMaps($scope.mapData);

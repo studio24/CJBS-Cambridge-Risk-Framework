@@ -38,6 +38,14 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
     // Set state hierarchy.
     $stateProvider
         .state('root', {
+            resolve     : {
+                projectList: [ 'projects', function( projects ) {
+
+                    // Get the full list of projects before the controller runs.
+                    return projects.getList();
+
+                }]
+            },
             url: '',
             abstract: true,
             views       : {
@@ -48,14 +56,6 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
             }
         })
         .state('home', {
-            resolve     : {
-                projectList: [ 'projects', function( projects ) {
-
-                    // Get the full list of projects before the controller runs.
-                    return projects.getList();
-
-                }]
-            },
             url: '/',
             parent      : 'root',
             views       : {
@@ -67,6 +67,37 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
         })
         .state('project', {
             resolve     : {
+                projectSummary: [ '$stateParams', 'projectList', 'utilsService', '$rootScope', function( $stateParams, projectList, utilsService, $rootScope ) {
+
+                    // Grab the project list if it's not already available on the rootscope.
+                    $rootScope.projectList = $rootScope.projectList || projectList;
+
+                    // Find the current project in the global project list.
+                    var getProjectSummary = function () {
+
+                        for (var i = 0; i < $rootScope.projectList.length; i++) {
+
+                            if ( $rootScope.projectList[i].id == $stateParams.projectId ) {
+
+                                var projectSummary = $rootScope.projectList[i];
+
+                                // Once you find the current project, check if it's been opened before.
+                                if (!$rootScope.projectList[i].viewed) {
+                                    // The project hasn't been opened before. Show the info modal and then mark this project as viewed.
+                                    utilsService.modal(projectSummary);
+                                    $rootScope.projectList[i].viewed = true;
+                                }
+
+                                // Then return it to the controller to attach to the modal window toggle.
+                                return projectSummary;
+
+                            }
+                        }
+                    };
+
+                    return getProjectSummary();
+
+                }],
                 project: [ '$stateParams', 'projects', function( $stateParams, projects ) {
 
                     var projectId = $stateParams.projectId;
@@ -97,7 +128,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
         })
         .state('section', {
             resolve     : {
-                section: [ '$stateParams', '$filter', 'sections', 'project', function( $stateParams, $filter, sections, project ) {
+                section: [ '$stateParams', '$filter', 'sections', 'project', 'projectSummary', function( $stateParams, $filter, sections, project, projectSummary ) {
 
                     var sectionNumber = $stateParams.sectionNumber;
 
@@ -127,16 +158,6 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }
             }
         })
-        .state('section.visualisation', {
-            url: '/:visualisationType',
-            parent: 'section',
-            views: {
-                "visualisation": {
-                    templateUrl: 'templates/visualisation.html',
-                    controller: 'crsVisualisationController'
-                }
-            }
-        })
         .state('phase', {
             resolve     : {
                 phase: [ '$stateParams', '$filter', 'phases', 'section', function( $stateParams, $filter, phases, section ) {
@@ -161,13 +182,11 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 }
             }
         })
-        .state('phase.visualisation', {
-            url: '/:visualisationType',
-            parent: 'phase',
+        .state('error', {
+            url: '/error',
             views: {
-                "visualisation": {
-                    templateUrl: 'templates/visualisation.html',
-                    controller: 'crsVisualisationController'
+                "content": {
+                    templateUrl: 'templates/error.html'
                 }
             }
         });
@@ -198,6 +217,7 @@ function run($rootScope, $timeout, $state, utilsService) {
     $rootScope
         .$on('$stateChangeStart',
         function(event, toState, toParams, fromState, fromParams){
+
             $rootScope.state.loading = true;
             $rootScope.state.bodyClass = 'loading ' + toState.name.split('.').join('-');
             console.log('State changing from "' + fromState.name + '" to "' + toState.name + '"...');
@@ -248,16 +268,22 @@ function run($rootScope, $timeout, $state, utilsService) {
             content     : 'Could not change from "' +
             ((fromState && fromState.name != '') ? fromState.name : 'no state') +
             '" to  "'+ (toState && toState.name) + '". ' +
-            'Reverting to previous state.'
+            'Attempting to revert to home page.'
 
         });
 
-        //$state.reload();
-
-        // If we attempted to load the home state, we cannot redirect to the same
+        // If the state that failed was the home state, we cannot redirect to the same
         // home state, because that would lead to a loop.
         if (toState.name === 'home') {
-            return $state.go('error');
+            if (fromState.name == 'error') {
+                $state.reload();
+                $rootScope.state = {
+                    loading     : false,
+                    bodyClass   : ""
+                };
+            } else {
+                return $state.go('error');
+            }
         } else {
             return $state.go('home');
         }
