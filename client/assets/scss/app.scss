@@ -362,7 +362,7 @@ nav {
                 circle, path {
                     transition-property: all;
                     transition-duration: 0.3s;
-                    opacity: 0.3;
+                    opacity: 0.5;
                 }
                 .selected {
                     circle {
@@ -386,7 +386,7 @@ nav {
                 circle, path {
                     transition-property: all;
                     transition-duration: 0.3s;
-                    opacity: 0.3;
+                    opacity: 0.5;
                 }
                 .selected {
                     stroke: $color-white;
@@ -425,7 +425,7 @@ nav {
     }
     .visualisation-grid-2 {
         .visualisation.active {
-            min-width: 40%;
+            min-width: 45%;
         }
     }
     .visualisation-grid-3 {
@@ -934,10 +934,18 @@ body {
 }
 .modal-overlay {
     background-color: rgba(0, 0, 0, 0.85);
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation-duration: 0.2s;
+    animation-duration: 0.2s;
 }
 .modal {
     background-color: $color-toolbar-light;
     box-shadow: 0 1px 2px black;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    -webkit-animation-duration: 0.2s;
+    animation-duration: 0.2s;
 
     img {
         margin-bottom: rem-calc(14);

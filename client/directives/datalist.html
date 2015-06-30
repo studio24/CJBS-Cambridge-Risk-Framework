@@ -26,8 +26,8 @@
             </div>
         </div>
     </div>
-    <ul class="grid-content record-list">
-        <li class="entry" ng-attr-title="{{styledefinition.nodestyles[entry.style].legendLabel}}" ng-repeat="entry in data | filter:filters.search:strict | orderObjectBy: filters.order:filters.ascending" ng-class="{ active: entry.id == visualisationStatus.selected }" ng-click="selectEntry( entry.id )">
+    <ul class="grid-content record-list" id="data-record-list">
+        <li class="entry" id="entry-{{entry.id}}" ng-attr-title="{{styledefinition.nodestyles[entry.style].legendLabel}}" ng-repeat="entry in data | filter:filters.search:strict | orderObjectBy: filters.order:filters.ascending" ng-class="{ active: entry.id == visualisationStatus.selected }" ng-click="selectEntry( entry.id )">
             <ul>
                 <li ng-repeat="field in entry.fields" ng-class="{ primary: columnheaders[$index].title == 'Name'}">
                     <span class="legend-indicator" ng-if="styledefinition && columnheaders[$index].id == 'name'" ng-attr-style="background-color: {{ styledefinition.nodestyles[entry.style].fillColor }}" ng-bind="styledefinition.nodestyles[entry.style].legendLabel"></span>

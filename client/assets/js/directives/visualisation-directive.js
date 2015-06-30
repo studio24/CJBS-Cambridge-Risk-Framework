@@ -69,7 +69,6 @@ crsVisualisations
             selected: null,
             updateSelected: function(id) {
                 this.selected = id;
-                console.log('Visualisation status service registered an ID change: ', this.selected);
             },
             error: function(msg) {
                 this.status = 'error';
@@ -89,7 +88,6 @@ crsVisualisations
             angular.forEach(originalLayerNames, function(layerName) {
 
                 if ( layerNames.indexOf(layerName) < 0 ) {
-                    console.log(layers[layerName]);
                     delete layers[layerName];
                 }
 
@@ -140,10 +138,6 @@ crsVisualisations
 
         };
 
-        $scope.$watch('visualisationStatus', function() {
-            console.log('Selected ID has been registered in visualisation: ', $scope.visualisationType , $scope.visualisationStatus.selected);
-        }, true);
-
     })
     .controller('crsDatalistDirectiveController', function ( $scope, $element, $window, visualisationStatus ) {
 
@@ -152,10 +146,6 @@ crsVisualisations
             search      :   '',
             ascending   :   false,
             selected    :   null
-        };
-
-        $scope.log = function (selected) {
-            console.log(selected);
         };
 
         $scope.selectEntry = function ( entryId ) {
@@ -224,13 +214,31 @@ crsVisualisations
                         styledefinition : datalist.styledefinition
                     });
 
-                    console.log($scope);
-
                 }
             }
         };
 
         $scope.loadDatalist($scope.layerData);
+
+        $scope.$watch('visualisationStatus', function() {
+
+            if ($scope.visualisationStatus.selected) {
+
+                var $selectedEntry = angular.element('#entry-' + $scope.visualisationStatus.selected);
+
+                if ($selectedEntry.length > 0) {
+
+                    var $recordList = angular.element('#data-record-list');
+
+                    var selectedEntryPosition = $selectedEntry.position().top + $recordList[0].scrollTop - ($recordList.height() / 2) + $selectedEntry.height();
+
+                    $recordList.animate({scrollTop: selectedEntryPosition}, 300);
+
+                }
+
+            }
+
+        }, true);
 
     })
     .controller('crsChartDirectiveController', function ( $scope, $element, $window, visualisationStatus ) {
@@ -246,8 +254,6 @@ crsVisualisations
                 if (data.hasOwnProperty(key)) {
 
                     var chartObject = data[key];
-
-                    console.log(key + " -> " + chartObject);
 
                     switch (chartObject['type']) {
                         case "BarChart":
@@ -386,8 +392,6 @@ crsVisualisations
             nodes.forEach(function(node) {
                 node.style = dataset.styledefinition.nodestyles[node.nodestyle];
 
-                console.log(dataset.parameters.algorithm);
-
                 if ( dataset.parameters.algorithm != 'd3_force_directed' ) {
                     node.fixed = true;
                 }
@@ -423,12 +427,6 @@ crsVisualisations
                 .attr('id', function (d) {
                     return 'node' + d.guid;
                 });
-
-            // Add the circle to the node
-            /*node.append('circle')
-             .attr('r', function (d) { return (3 * d.size) + 15; })
-             .attr('fill-opacity', '0')
-             .attr('stroke', 'white');*/
             node.append('text')
                 .text(function (d) {
                     return d.title;
@@ -453,10 +451,9 @@ crsVisualisations
                 .attr('r', function (d) { return 3 * d.size; });
             node.on('click', function(d, i) {
                 $scope.$apply(function() {
-                    $scope.selected = d.guid;
-                })
+                    $scope.visualisationStatus.selected = d.guid;
+                });
             });
-
 
             // Move around the link and nodes on each tick
             force.on('tick', function() {
@@ -483,35 +480,10 @@ crsVisualisations
         $scope.loadGraphs($scope.graphData);
 
         $scope.highlightNode = function ( nodeId ) {
-            var nodes = d3.selectAll('.node');
+            var nodes = d3.selectAll('.graphs .node');
             nodes.classed('selected', false);
             d3.select('#node' + nodeId).classed('selected', true);
         };
-
-        $scope.syncNetworkNodes = function () {
-            var nodes = d3.selectAll('.node');
-            nodes.classed('open', false);
-            var companies = $parent.currentData.companies;
-            for (var i in companies) {
-                if (companies.hasOwnProperty([i])) {
-                    var company = companies[i];
-                    if (company.class == 'open') {
-                        d3.select('#node' + company.hiddenProperties.guid).classed('open', true);
-                    }
-                }
-            }
-
-        };
-
-        $scope.$watch('selected', function() {
-            console.log('Selected ID has changed: ', $scope.selected);
-            visualisationStatus.updateSelected($scope.selected);
-
-            $scope.visualisationStatus.selected = $scope.selected;
-
-            $scope.highlightNode($scope.visualisationStatus.selected);
-
-        });
 
         $scope.$watch('visualisationStatus', function() {
 
@@ -524,6 +496,29 @@ crsVisualisations
 
     })
     .controller('crsMapDirectiveController', [ "$scope", "leafletData", "leafletBoundsHelpers", "$filter", function ( $scope, leafletData, leafletBoundsHelpers, $filter, visualisationStatus ) {
+
+        $scope.markerMap = {}; //a global variable unless you extend L.GeoJSON
+
+        //Add the marker id as a data item (called "data-artId") to the "a" element
+        function addToList(data) {
+            for (var i = 0; i < data.features.length; i++) {
+                var art = data.features[i];
+                $('div#infoContainer').append('<a href="#" class="list-link" data-artId=\"'+art.id+'\" title="' + art.properties.descfin + '"><div class="info-list-item">' + '<div class="info-list-txt">' + '<div class="title">' + art.properties.wrknm + '</div>' + '<br />' + art.properties.location + '</div>' + '<div class="info-list-img">' + art.properties.img_src + '</div>' + '<br />' + '</div></a>')
+            }
+            $('a.list-link').click(function (e) {
+                alert('now you see what happens when you click a list item!');
+
+                //Get the id of the element clicked
+                var artId = $(this).data( 'artId' );
+                var marker = markerMap[artId];
+
+                //since you're using CircleMarkers the OpenPopup method requires
+                //a latlng so I'll just use the center of the circle
+                marker.openPopup(marker.getLatLng());
+                e.preventDefault()
+            })
+        }
+
         // Chart drawing logic goes in here
         $scope.loadMaps = function(data) {
             // D3
@@ -662,14 +657,6 @@ crsVisualisations
                                                 styles.fillOpacity = 1;
                                                 styles.stroke = 0;
 
-                                                if ($scope.visualisationStatus.selected && feature.id == $scope.visualisationStatus.selected) {
-                                                    styles.className = 'selected';
-                                                } else {
-                                                    styles.className = '';
-                                                }
-
-                                                return styles;
-
                                             } else if ( typeof(feature.properties.linkstyle) != 'undefined' ) {
 
                                                 // Apply link styles
@@ -677,9 +664,15 @@ crsVisualisations
                                                 styles.opacity = 0.2;
                                                 styles.weight = 1;
 
-                                                return styles;
-
                                             }
+
+                                            styles.className = 'node node-' + feature.id;
+
+                                            if ($scope.visualisationStatus.selected && feature.id == $scope.visualisationStatus.selected) {
+                                                styles.className += ' selected';
+                                            }
+
+                                            return styles;
 
                                         },
                                         pointToLayer: function (feature, latlng) {
@@ -697,6 +690,8 @@ crsVisualisations
                                                 feature.properties.hide = true;
 
                                             });
+
+                                            $scope.markerMap[feature.id] = marker;
 
                                             return marker;
 
@@ -739,7 +734,7 @@ crsVisualisations
                         //Access the map object
                         $scope.map = map;
 
-                        map.on('overlayadd overlayremove', function (event, layer) {
+                        $scope.map.on('overlayadd overlayremove', function (event, layer) {
                             // An overlay has been toggled. Refresh the geoJSON layers
 
                             // TODO: Make this work properly
@@ -757,13 +752,11 @@ crsVisualisations
 
                     $scope.$on("leafletDirectiveMap.geojsonMouseover", function(ev, feature, leafletEvent) {
                         var layer = leafletEvent.target;
-                        console.log(feature.id + ' hovered');
                     });
 
                     $scope.$on("leafletDirectiveMap.geojsonClick", function(ev, feature, leafletEvent) {
                         var layer = leafletEvent.target;
                         layer.bringToFront();
-                        console.log(feature.id + ' clicked', feature);
 
                         $scope.visualisationStatus.selected = feature.id;
 
@@ -779,41 +772,30 @@ crsVisualisations
             }
         };
 
-        $scope.highlightNode = function ( nodeId ) {
-            var nodes = d3.selectAll('.node');
-            nodes.classed('selected', false);
-            d3.select('#node' + nodeId).classed('selected', true);
-        };
-
         $scope.loadMaps($scope.mapData);
 
-        $scope.syncMapNodes = function () {
-            var allMarkers = $scope.allMapMarkers;
-            var map = $scope.getGuidToIdMap();
-            for (var key in allMarkers) {
-                if (allMarkers.hasOwnProperty(key)) {
-                    var id = allMarkers[key]._id;
-                    var className = $parent.currentData.companies[map[id]].class;
-                    allMarkers[key]._container.setAttribute('class', className);
-                    allMarkers[key]._path.removeAttribute('stroke');
-                    if (className == 'open') {
-                        // remove/add to DOM to repaint on top
-                        var parent = allMarkers[key]._container.parentNode;
-                        var tmpContainer = allMarkers[key]._container;
-                        parent.removeChild(tmpContainer);
-                        parent.appendChild(tmpContainer);
+        $scope.highlightNode = function ( nodeId ) {
+            var nodes = d3.selectAll('.maps .node');
+            nodes.classed('selected', false);
+
+            if (nodeId) {
+                d3.select('.node-' + nodeId).classed('selected', true);
+
+                var selectedMarker = $scope.markerMap[nodeId];
+
+                if (selectedMarker) {
+
+                    selectedMarker.bringToFront();
+
+                    var newZoomLevel = 3;
+
+                    if ($scope.center.zoom > newZoomLevel) {
+                        newZoomLevel = $scope.center.zoom;
                     }
+
+                    $scope.map.setView(selectedMarker.getLatLng(), newZoomLevel, {animate: true});
                 }
             }
-        };
-
-        $scope.highlightNode = function ( nodeId ) {
-
-                //console.log(map);
-                ////Access the map object
-                //var feature = $scope.geojson.getLayer(nodeId);
-                //console.log(feature);
-
         };
 
     }])
