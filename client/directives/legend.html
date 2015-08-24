@@ -1,0 +1,13 @@
+<div class="legend-wrapper">
+    <button class="legend-button" ng-click="showLegend = !showLegend">Show legend</button>
+    <section id="legend" ng-show="showLegend">
+        <ul>
+            <li ng-repeat="legend in data">
+                <svg width="10" height="10">
+                    <circle r="5" cx="5" cy="5" fill="{{ legend.fillColor}}"></circle>
+                </svg>
+                {{ legend.legendLabel }}
+            </li>
+        </ul>
+    </section>
+</div>

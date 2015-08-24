@@ -1,1 +1,2 @@
-<leaflet id="leafletmap" layers="layers" geojson="geojson | geoJsonFilter: visibleLayers" geojson-nested="true" maxbounds="maxbounds" center="center" class="grid-block" ng-class="{'selected': visualisationStatus.selected}"></leaflet>
+<leaflet id="leafletmap" layers="layers" geojson="geojson | geoJsonFilter: visibleLayers" geojson-nested="true" maxbounds="bounds" maxbounds="maxbounds" defaults="defaults" class="grid-block" ng-class="{'selected': visualisationStatus.selected}"></leaflet>
+<graphlegend ng-if="nodeLegend" data="nodeLegend"></graphlegend>

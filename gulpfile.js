@@ -42,7 +42,7 @@ var foundationJS = [
     'bower_components/lodash/lodash.js',
     'bower_components/d3/d3.js',
     'bower_components/restangular/dist/restangular.js',
-    'bower_components/angular-toArrayFilter/toArrayFilter.js',
+
     'bower_components/angular-ui-select/dist/select.js',
     'bower_components/angular-fullscreen/src/angular-fullscreen.js'
 ];
@@ -115,8 +115,7 @@ gulp.task('uglify', function() {
             console.log(e);
         }))
         .pipe($.concat('foundation.js'))
-        .pipe(gulp.dest('./build/assets/js/'))
-    ;
+        .pipe(gulp.dest('./build/assets/js/'));
 
     // App JavaScript
     return gulp.src(appJS)
@@ -127,8 +126,7 @@ gulp.task('uglify', function() {
         //  console.log(e);
         //}))
         //.pipe($.concat('app.js'))
-        .pipe(gulp.dest('./build/assets/js/'))
-        ;
+        .pipe(gulp.dest('./build/assets/js/'));
 });
 
 // Copies your app's page templates

@@ -1,5 +1,9 @@
 'use strict';
 
+var crsConfig = {
+    debug: true
+}
+
 // Initialise the app with dependencies.
 var app = angular.module('application', [
     'ui.router',
@@ -221,7 +225,10 @@ function run($rootScope, $timeout, $state, utilsService) {
 
             $rootScope.state.loading = true;
             $rootScope.state.bodyClass = 'loading ' + toState.name.split('.').join('-');
-            console.log('State changing from "' + fromState.name + '" to "' + toState.name + '"...');
+
+            if ( crsConfig.debug ) {
+                console.log('State changing from "' + fromState.name + '" to "' + toState.name + '"...');
+            }
         });
 
     // Set and remove classes when state changes come to an end to animate the new content in.
@@ -235,13 +242,11 @@ function run($rootScope, $timeout, $state, utilsService) {
             $timeout(function () {
                 $rootScope.state.bodyClass = 'loaded';
             },300);
-            console.log('State change successful.');
-            //utilsService.notify({
-            //    title       : 'State change successful',
-            //    content     : 'From "' + ((fromState && fromState.name != '') ? fromState.name : 'no state') + '" to  "'+ (toState && toState.name) + '".',
-            //    color       : 'success',
-            //    autoclose   : 3000
-            //});
+
+            if ( crsConfig.debug ) {
+                console.log('State change successful.');
+            }
+
         });
 
     // Report errors in state transitions.

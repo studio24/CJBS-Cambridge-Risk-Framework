@@ -1,13 +1,10 @@
 <div id="info-panel" class="show-for-medium medium-grid-block sliding-panel info-panel" ng-class="{'active vertical medium-4 large-3': infoVisible, 'shrink': !infoVisible}">
     <div class="grid-block panel-toolbar shrink">
         <a class="grid-block shrink" ng-click="toggleInfoPanel()">
-            <i class="fa fa-file-o panel-icon"></i>
+            <i class="fa fa-file-o panel-icon panel-toggle"></i>
         </a>
         <div class="grid-block" ng-if="infoVisible" class="grid-block shrink">
             <h2 class="grid-block" class="panel-title">About</h2>
-            <a class="grid-block shrink" ng-click="toggleInfoPanel()">
-                <span class="panel-close">×</span>
-            </a>
         </div>
     </div>
     <div class="grid-content panel-content" ng-if="infoVisible">

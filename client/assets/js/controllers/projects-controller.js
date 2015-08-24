@@ -41,22 +41,18 @@ app.controller('crsRootController', ['$scope', 'Fullscreen', 'utilsService', fun
 app.controller('crsProjectListController', ['$scope', 'projectList', function ( $scope, projectList ) {
 
     $scope.projects = projectList;
-    console.log( 'Projects added to scope:', $scope.projects );
-
-    // Set the search text as a variable so we can filter by it when the user enters their search terms.
-    $scope.filters = {
-        name            :   '',
-        threat          :   '',
-        threatclass     :   '',
-        typecode        :   ''
-    };
+    if (crsConfig.debug) {
+        console.log( 'Project list added to scope:', $scope.projects );
+    }
 
 }]);
 
 app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', 'projectSummary', '$state', '$stateParams', 'utilsService', function(FoundationApi, $scope, project, projectSummary, $state, $stateParams, utilsService) {
 
     $scope.project = project;
-    console.log( 'Project added to scope:', $scope.project );
+    if (crsConfig.debug) {
+        console.log('Project added to scope:', $scope.project);
+    }
 
     $scope.projectSummary = $scope.projectSummary || projectSummary;
 
@@ -88,7 +84,9 @@ app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', 'p
 app.controller('crsSectionController', ['$scope', '$sce', 'section', '$state', function ( $scope, $sce, section, $state ) {
 
     $scope.section = section;
-    console.log( 'Section added to scope:', $scope.section );
+    if (crsConfig.debug) {
+        console.log('Section added to scope:', $scope.section);
+    }
 
     $scope.content = section;
 
@@ -213,7 +211,9 @@ app.controller('crsSectionController', ['$scope', '$sce', 'section', '$state', f
 app.controller('crsPhaseController', ['$sce', '$scope', function ( $scope, $sce, phase, $state ) {
 
     $scope.phase = phase;
-    console.log( 'Phase added to scope:', $scope.phase );
+    if (crsConfig.debug) {
+        console.log('Phase added to scope:', $scope.phase);
+    }
 
     // Trust HTML so that inline styles work
     if (phase.infopanel.body && typeof(phase.infopanel.body) == 'string') {

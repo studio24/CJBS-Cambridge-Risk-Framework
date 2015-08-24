@@ -91,8 +91,6 @@ crsVisualisations
             angular.forEach(originalLayerNames, function(layerName) {
 
                 if ( layerNames.indexOf(layerName) < 0 ) {
-                    console.log('Remove this:', filteredLayers[layerName]);
-
                     delete filteredLayers[layerName];
                     changed = true;
                 }
@@ -140,7 +138,6 @@ crsVisualisations
                     $scope.visualisationStatus.count++;
                 }
             }
-
 
             $timeout(function(){
                 window.dispatchEvent(new Event('resize'));
@@ -231,6 +228,8 @@ crsVisualisations
 
         $scope.$watch('visualisationStatus', function() {
 
+            $('#data-record-list .entry').removeClass('active');
+
             if ($scope.visualisationStatus.selected) {
 
                 var $selectedEntry = angular.element('#entry-' + $scope.visualisationStatus.selected);
@@ -239,7 +238,9 @@ crsVisualisations
 
                     var $recordList = angular.element('#data-record-list');
 
-                    var selectedEntryPosition = $selectedEntry.position().top + $recordList[0].scrollTop - ($recordList.height() / 2) + $selectedEntry.height();
+                    var selectedEntryPosition = $selectedEntry.position().top + $recordList[0].scrollTop;
+
+                    $selectedEntry.addClass('active')
 
                     $recordList.animate({scrollTop: selectedEntryPosition}, 300);
 
@@ -339,6 +340,8 @@ crsVisualisations
             var dataset = $data.graph1;
             var width = d3.select(container)[0][0].clientWidth,
                 height = 800;
+
+            $scope.nodeLegend = dataset.styledefinition.nodestyles;
 
             // Setup the required variables
             var links = [];
@@ -531,13 +534,14 @@ crsVisualisations
 
         }, true);
 
-
-
-
     })
     .controller('crsMapDirectiveController', [ "$scope", "leafletData", "leafletBoundsHelpers", "$filter", function ( $scope, leafletData, leafletBoundsHelpers, $filter, visualisationStatus ) {
 
         $scope.markerMap = {}; //a global variable unless you extend L.GeoJSON
+
+        $scope.defaults = {
+            maxZoom: 10
+        }
 
         //Add the marker id as a data item (called "data-artId") to the "a" element
         function addToList(data) {
@@ -569,34 +573,49 @@ crsVisualisations
             for (var key in data) {
                 if (data.hasOwnProperty(key)) {
 
-
-
                     var mapObject = data[key];
+
+
+                    console.log(mapObject);
+
+                    $scope.nodeLegend = mapObject.styledefinition.nodestyles;
+
+
 
                     angular.extend($scope, mapObject);
 
-                    // Set the map bounding box
-                    // TODO: Add dynamic bounding box
+                    var center = {};
+
+                    center.lat      =   mapObject.center[0];
+                    center.lng      =   mapObject.center[1];
+
+                    $scope.center = center;
 
                     $scope.maxbounds = leafletBoundsHelpers.createBoundsFromArray([
                         [ 85, 180 ],
                         [ -85, -180 ]
                     ]);
 
-                    var center = {};
+                    var bounds = leafletBoundsHelpers.createBoundsFromArray([
+                        [ 85, 180 ],
+                        [ -85, -180 ]
+                    ]);
 
-                    center.zoom     =   mapObject.zoom || 2;
-                    center.lat      =   mapObject.center[0];
-                    center.lng      =   mapObject.center[1];
+                    if (mapObject.bbox && mapObject.bbox.northeast && mapObject.bbox.southwest) {
+                        bounds = leafletBoundsHelpers.createBoundsFromArray([
+                            mapObject.bbox.northeast,
+                            mapObject.bbox.southwest
+                        ]);
+                        $scope.center = null;
+                    }
 
-                    $scope.center = center;
+                    $scope.bounds = bounds;
 
                     angular.extend($scope, {
                         layers : {}
                     });
 
                     // Base background layers
-                    // TODO: Replace default background layer feature
 
                     var baselayers = {};
 
@@ -754,11 +773,6 @@ crsVisualisations
                         geojson : geojson
                     });
 
-
-
-
-
-
                     // Overlay WMS layers
                     if ( overlays.count > 0 ) {
                         // Add overlays to the scope
@@ -842,11 +856,7 @@ crsVisualisations
 
                     selectedMarker.bringToFront();
 
-                    var newZoomLevel = 3;
-
-                    if ($scope.center.zoom > newZoomLevel) {
-                        newZoomLevel = $scope.center.zoom;
-                    }
+                    var newZoomLevel = 4;
 
                     $scope.map.setView(selectedMarker.getLatLng(), newZoomLevel, {animate: true});
                 }
@@ -922,5 +932,15 @@ crsVisualisations
                 visualisationStatus: '='
             },
             controller: 'crsChartDirectiveController'
+        };
+    })
+    .directive('graphlegend', function() {
+        return {
+            restrict: 'E',
+            scope: {
+                data: '='
+            },
+            replace: true,
+            templateUrl: 'directives/legend.html'
         };
     });
