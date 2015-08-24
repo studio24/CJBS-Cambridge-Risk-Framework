@@ -24,7 +24,8 @@
   ],
   "dependencies": {
     "foundation-apps": "~1.1.0",
-    "d3": "~3.5.5"
+    "d3": "~3.5.5",
+    "angular-toArrayFilter": "~1.0.1"
   },
   "devDependencies": {
     "angular-leaflet-directive": "~0.7.15",

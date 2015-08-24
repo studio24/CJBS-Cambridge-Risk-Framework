@@ -9,7 +9,8 @@ var app = angular.module('application', [
     'ui.select',
     'FBAngular',
     'foundation',
-    'restangular'
+    'restangular',
+    'angular-toArrayFilter'
     ])
     .config(config)
     .run(run)

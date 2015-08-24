@@ -81,21 +81,31 @@ crsVisualisations
         }
     })
     .filter('geoJsonFilter', function () {
-        return function(layers, layerNames) {
-
+        return _.memoize(function(layers, layerNames) {
             var originalLayerNames = Object.keys(layers);
+
+            var filteredLayers = angular.copy(layers);
+
+            var changed = false;
 
             angular.forEach(originalLayerNames, function(layerName) {
 
                 if ( layerNames.indexOf(layerName) < 0 ) {
-                    delete layers[layerName];
-                }
+                    console.log('Remove this:', filteredLayers[layerName]);
 
+                    delete filteredLayers[layerName];
+                    changed = true;
+                }
             });
 
-            return layers;
-
-        };
+            if (changed) {
+                return filteredLayers;
+            } else {
+                return layers;
+            }
+        }, function resolver(layers, layerNames) {
+            return layers.length + layerNames;
+        });
     })
     .controller('crsInfoPanelDirectiveController', function ( $scope, $element, $window, $timeout ) {
 
@@ -157,7 +167,6 @@ crsVisualisations
         };
 
         $scope.loadDatalist = function ( _data ) {
-
 
             var originalData = _data;
 
@@ -246,6 +255,14 @@ crsVisualisations
         // Chart drawing logic goes here
         $scope.loadCharts = function(data) {
 
+            function drawChart( chartData, chartOptions, containerDiv ) {
+
+                chartOptions.width = containerDiv.offsetWidth;
+                chartOptions.height = containerDiv.offsetHeight;
+                chart.draw(chartData, chartOptions);
+
+            }
+
             var chartDiv = $element[0],
                 containerDiv = $element.parent()[0];
 
@@ -296,14 +313,6 @@ crsVisualisations
                             chartOptions.lineWidth = $data.charts.options.lineWidth;
                         }
 
-                        function drawChart( chartData, chartOptions, containerDiv ) {
-
-                            chartOptions.width = containerDiv.offsetWidth;
-                            chartOptions.height = containerDiv.offsetHeight;
-                            chart.draw(chartData, chartOptions);
-
-                        }
-
                         angular.element($window).bind('resize', function () {
                             drawChart( chartData, chartOptions, containerDiv );
                         });
@@ -311,8 +320,6 @@ crsVisualisations
                         angular.element(document).ready(function () {
                             drawChart( chartData, chartOptions, containerDiv );
                         });
-
-
 
                     }
 
@@ -442,17 +449,50 @@ crsVisualisations
                 });
             node.append('circle')
                 .attr('fill', function(d) {
-                    if (typeof(d.style) != 'undefined') {
+                    if (d.style && d.style.fillColor) {
                         return d.style.fillColor;
                     } else {
                         return '#ffffff';
                     }
                 })
+                .attr('stroke', function(d){
+                    if (d.style && d.style.stroke) {
+                        if (d.style.stroke == true || d.style.stroke.toLowerCase() === 'true') {
+                            return '#999';
+                        }
+                    }
+                })
+                .attr('stroke-width', function(d){
+                    if (d.style && d.style.stroke) {
+                        if (d.style.stroke == true || d.style.stroke.toLowerCase() === 'true') {
+                            return 2;
+                        }
+                    }
+                })
                 .attr('r', function (d) { return 3 * d.size; });
+
+
+
+
+
             node.on('click', function(d, i) {
+
+                // Node has been clicked. Select the node.
                 $scope.$apply(function() {
                     $scope.visualisationStatus.selected = d.guid;
                 });
+
+            });
+
+            $('.network-graph svg').on('click', function(e){
+                if ( !$(e.target).closest('.node').length > 0 ) {
+
+                    // No node has been clicked. Deselect nodes.
+                    $scope.$apply(function() {
+                        $scope.visualisationStatus.selected = '';
+                    });
+
+                }
             });
 
             // Move around the link and nodes on each tick
@@ -634,7 +674,7 @@ crsVisualisations
 
                                 if ( typeof(thisPrimaryLayer.geojson.features) != 'undefined' ) {
 
-                                    var layerName = 'geojson' + primarylayer;
+                                    var layerName = thisPrimaryLayer.title;
 
                                     // Assign each feature to a layer
                                     for ( var i = 0; i < thisPrimaryLayer.geojson.features.length; i++ ) {
@@ -677,36 +717,33 @@ crsVisualisations
                                         },
                                         pointToLayer: function (feature, latlng) {
 
-                                            var marker = new L.CircleMarker(latlng, {radius: feature.properties.size * 3, fillOpacity: 0.85});
+                                            if (!feature.properties.hide) {
+                                                var marker = new L.CircleMarker(latlng, {radius: feature.properties.size * 3, fillOpacity: 0.85});
 
-                                            feature.layer = layerName;
+                                                feature.layer = layerName;
 
-                                            if (feature.properties.title !== undefined) {
-                                                marker.bindLabel('<span style="color:' + newProperties.titleColor + '">' + feature.properties.title + '</span>', { noHide: true });
+                                                if (feature.properties.title !== undefined) {
+                                                    marker.bindLabel('<span style="color:' + newProperties.titleColor + '">' + feature.properties.title + '</span>', { noHide: true });
+                                                }
+
+                                                $scope.markerMap[feature.id] = marker;
+
+                                                return marker;
                                             }
-
-                                            marker.on('click', function(e) {
-
-                                                feature.properties.hide = true;
-
-                                            });
-
-                                            $scope.markerMap[feature.id] = marker;
-
-                                            return marker;
 
                                         },
                                         layer: layerName,
-                                        type: 'geoJSON'
+                                        type: 'geoJSON',
+                                        visible: true
                                     };
                                     geojson[layerName] = thisGeoJSON;
 
-                                    //overlays[layerName] = {
-                                    //    name            : thisPrimaryLayer.title,
-                                    //    type            : 'group',
-                                    //    visible         : true
-                                    //};
-                                    //overlays.count++;
+                                    overlays[layerName] = {
+                                        name            : layerName,
+                                        type            : 'group',
+                                        visible         : true
+                                    };
+                                    overlays.count++;
 
                                     $scope.visibleLayers.push(layerName);
                                 }
@@ -739,12 +776,26 @@ crsVisualisations
 
                             // TODO: Make this work properly
 
-                            $scope.$apply(function(){
-                                $scope.visibleLayers = ["geojson20"];
-                                $scope.geojson = $filter('geoJsonFilter')($scope.geojson, $scope.visibleLayers);
-                            });
+                            var currentLayerIndex;
 
-                            $scope.geojson = $filter('geoJsonFilter')($scope.geojson, $scope.visibleLayers);
+                            // Iterate through the visible layers to check if the clicked layer is already visible.
+                            for ( var i = 0; i < $scope.visibleLayers.length; i++ ) {
+                                if ( event.name == $scope.visibleLayers[i] ) {
+                                    currentLayerIndex = i;
+                                }
+                            }
+
+                            // Add or remove the layer from the visibleLayers array
+                            if ( typeof(currentLayerIndex) != 'undefined' && event.type == 'overlayremove' ) {
+                                $scope.visibleLayers.splice(currentLayerIndex, 1);
+                            } else if ( typeof(currentLayerIndex) == 'undefined' && event.type == 'overlayadd') {
+                                $scope.visibleLayers.push(event.name);
+                            }
+
+                            // Apply the filter to show or hide the appropriate geoJSON on the map
+                            //$scope.$apply(function(){
+                            //    $scope.geojson = $filter('geoJsonFilter')($scope.geojson, $scope.visibleLayers);
+                            //});
 
                         });
 
@@ -760,6 +811,10 @@ crsVisualisations
 
                         $scope.visualisationStatus.selected = feature.id;
 
+                    });
+
+                    $scope.$on('leafletDirectiveMap.click', function(event){
+                        $scope.visualisationStatus.selected = '';
                     });
 
                     $scope.$watch('visualisationStatus', function() {

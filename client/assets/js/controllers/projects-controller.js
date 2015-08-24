@@ -1,28 +1,33 @@
 app.controller('crsRootController', ['$scope', 'Fullscreen', 'utilsService', function ( $scope, Fullscreen, utilsService ) {
 
-    // Add a function to the scope to toggle fullscreen mode.
-    $scope.goFullscreen = function () {
+    $scope.fullscreenSupported = Fullscreen.isSupported();
 
-        if ( Fullscreen.isEnabled() ) {
+    if ($scope.fullscreenSupported) {
 
-            Fullscreen.cancel();
+        // Add a function to the scope to toggle fullscreen mode.
+        $scope.goFullscreen = function () {
 
-        } else {
+            if ( Fullscreen.isEnabled() ) {
 
-            Fullscreen.all();
+                Fullscreen.cancel();
 
-        }
-    };
+            } else {
 
-    // Listen for changes to fullscreen mode
-    Fullscreen.$on('FBFullscreen.change', function(){
+                Fullscreen.all();
 
-        // Update fullscreen parameter on scope so that the icon can be updated
-        $scope.$apply(function() {
-            $scope.fullscreen = Fullscreen.isEnabled();
+            }
+        };
+
+        // Listen for changes to fullscreen mode
+        Fullscreen.$on('FBFullscreen.change', function(){
+
+            // Update fullscreen parameter on scope so that the icon can be updated
+            $scope.$apply(function() {
+                $scope.fullscreen = Fullscreen.isEnabled();
+            });
+
         });
-
-    });
+    }
 
     $scope.aboutApp = function(){
         utilsService.modal({
@@ -80,12 +85,17 @@ app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', 'p
 
 }]);
 
-app.controller('crsSectionController', function ( $scope, section, $state ) {
+app.controller('crsSectionController', ['$scope', '$sce', 'section', '$state', function ( $scope, $sce, section, $state ) {
 
     $scope.section = section;
     console.log( 'Section added to scope:', $scope.section );
 
     $scope.content = section;
+
+    // Trust HTML so that inline styles work
+    if (section.infopanel.body && typeof(section.infopanel.body) == 'string') {
+        $scope.content.infopanel.body = $sce.trustAsHtml(section.infopanel.body);
+    }
 
     var parentState = 'section',
         defaultChildState = 'phase';
@@ -198,12 +208,17 @@ app.controller('crsSectionController', function ( $scope, section, $state ) {
 
     };
 
-});
+}]);
 
-app.controller('crsPhaseController', function ( $scope, phase, $state ) {
+app.controller('crsPhaseController', ['$sce', '$scope', function ( $scope, $sce, phase, $state ) {
 
     $scope.phase = phase;
     console.log( 'Phase added to scope:', $scope.phase );
+
+    // Trust HTML so that inline styles work
+    if (phase.infopanel.body && typeof(phase.infopanel.body) == 'string') {
+        $scope.content.infopanel.body = $sce.trustAsHtml(phase.infopanel.body);
+    }
 
     // Load the phase content into the scope
     $scope.content = phase;
@@ -303,4 +318,4 @@ app.controller('crsPhaseController', function ( $scope, phase, $state ) {
 
     };
 
-});
+}]);

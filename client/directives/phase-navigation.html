@@ -2,7 +2,6 @@
     <div class="grid-block" ng-if="phases.length > 0">
         <div class="grid-block shrink phase-controls">
             <a class="phase-control prev-phase" ng-class="{ disabled: !prevPhase() }" ng-click="goToPhase(prevPhase())" ><i class="fa fa-angle-double-left"></i></a>
-            <a class="phase-control play-phases"><i class="fa fa-play"></i></a>
             <a class="phase-control next-phase" ng-class="{ disabled: !nextPhase() }" ng-click="goToPhase(nextPhase())" ><i class="fa fa-angle-double-right"></i></a>
         </div>
         <ul class="grid-block" ng-class="'small-up-' + phases.length">

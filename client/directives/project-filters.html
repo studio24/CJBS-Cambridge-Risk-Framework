@@ -10,7 +10,7 @@
 
         <!--Filter by threat-->
         <div class="select" ng-if="threatsList && threatsList.length > 0">
-            <ui-select ng-model="filters.threat" search-enabled="{{threatsList.length > 9}}">
+            <ui-select ng-model="filters.threat" search-enabled="false">
                 <ui-select-match allow-clear="true" placeholder="Threat">
                     <div ng-if="filters.threat">
                         <img ng-if="$select.selected.iconurl" ng-src="{{$select.selected.iconurl}}" alt=""/>
@@ -26,7 +26,7 @@
 
         <!--Filter by threat class-->
         <div class="select" ng-if="threatclassesList && threatclassesList.length > 0">
-            <ui-select ng-model="filters.threatclass" search-enabled="{{threatclassesList.length > 9}}">
+            <ui-select ng-model="filters.threatclass" search-enabled="false">
                 <ui-select-match allow-clear="true" placeholder="Threat Class">
                     <div ng-if="filters.threatclass">
                         <img ng-if="$select.selected.iconurl" ng-src="{{$select.selected.iconurl}}" alt=""/>
@@ -42,7 +42,7 @@
 
         <!--Filter by type code-->
         <div class="select" ng-if="typecodesList && typecodesList.length > 0">
-            <ui-select ng-model="filters.typecode" search-enabled="{{typecodesList.length > 9}}">
+            <ui-select ng-model="filters.typecode" search-enabled="false">
                 <ui-select-match allow-clear="true" placeholder="Type codes">
                     <div ng-if="filters.typecode">
                         <img ng-if="$select.selected.iconurl" ng-src="{{$select.selected.iconurl}}" alt=""/>

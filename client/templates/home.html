@@ -1,10 +1,10 @@
 <div class="grid-block shrink">
     <div class="project-title-bar">
-        <a class="project-control project-fullscreen right-align" ng-click="goFullscreen()">
+        <a class="project-control project-fullscreen right-align" ng-if="fullscreenSupported" ng-click="goFullscreen()">
             <i ng-show="!fullscreen" class="fa fa-expand"></i>
             <i ng-show="fullscreen" class="fa fa-compress"></i>
         </a>
-        <a class="info-modal-toggle right-align" ng-click="aboutApp()">
+        <a class="crs-logo right-align" href="http://www.cambridgeriskframework.com" target="_blank" title="Click to visit the Cambridge Risk Studies website">
             <img src="/assets/img/crs-logo.png" alt="University of Cambridge Judge Business School Centre for Risk Studies"/>
         </a>
         <div class="project-title">

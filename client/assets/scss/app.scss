@@ -62,7 +62,7 @@ p {
     float: right;
     display: block;
 }
-.info-modal-toggle {
+.crs-logo {
     height: 36px;
     width: auto;
     margin: 14px 10px 12px;
@@ -551,6 +551,7 @@ nav {
             }
             .primary {
                 font-weight: 700;
+                margin: 15px 0;
             }
         }
     }
@@ -572,7 +573,6 @@ nav {
         color: $color-white;
         display: block;
         margin-right: 40px;
-        overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         word-wrap: break-word;

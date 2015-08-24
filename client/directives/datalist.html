@@ -5,12 +5,15 @@
         </div>
         <div class="select" ng-if="legend && legend.length > 0">
             <ui-select ng-model="filters.search" search-enabled="{{legend.length > 9}}">
+                <p ng-bind="$select.search"></p>
                 <ui-select-match allow-clear="true" placeholder="Legend">Legend</ui-select-match>
-                <ui-select-choices repeat="entry.legendLabel as entry in legend track by $index">
+                <ui-select-choices repeat="entry.legendLabel as entry in legend | filter: $select.search track by $index">
                     <span class="legend-indicator" ng-attr-style="background-color: {{ entry.fillColor }}" ng-bind="styledefinition.nodestyles[entry.style].legendLabel"></span>
                     <span ng-bind-html="entry.legendLabel | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
+
+
         </div>
         <div class="select sorting">
             <div class="sort-field">
@@ -29,10 +32,10 @@
     <ul class="grid-content record-list" id="data-record-list">
         <li class="entry" id="entry-{{entry.id}}" ng-attr-title="{{styledefinition.nodestyles[entry.style].legendLabel}}" ng-repeat="entry in data | filter:filters.search:strict | orderObjectBy: filters.order:filters.ascending" ng-class="{ active: entry.id == visualisationStatus.selected }" ng-click="selectEntry( entry.id )">
             <ul>
-                <li ng-repeat="field in entry.fields" ng-class="{ primary: columnheaders[$index].title == 'Name'}">
+                <li ng-repeat="field in entry.fields | filter: header.show " ng-class="{ primary: columnheaders[$index].title == 'Name'}" ng-show="columnheaders[$index].show">
                     <span class="legend-indicator" ng-if="styledefinition && columnheaders[$index].id == 'name'" ng-attr-style="background-color: {{ styledefinition.nodestyles[entry.style].fillColor }}" ng-bind="styledefinition.nodestyles[entry.style].legendLabel"></span>
                     <span ng-if="columnheaders[$index].id != 'name'" ng-bind="columnheaders[$index].title + ': '"></span><span ng-bind="field.v"></span>
-                    <span class="filtered-highlight" ng-if="entry.fields[filters.order].v && columnheaders[filters.order].id != 'name' && columnheaders[$index].id == 'name' && entry.id != selected">[<span ng-bind="entry.fields[filters.order].v"></span>]</span>
+                    <span class="filtered-highlight" ng-if="entry.fields[filters.order].v && columnheaders[filters.order].id != 'name' && columnheaders[$index].id == 'name' && entry.id != selected"><span ng-bind="entry.fields[filters.order].v"></span></span>
                 </li>
             </ul>
         </li>
