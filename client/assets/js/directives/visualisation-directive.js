@@ -67,6 +67,7 @@ crsVisualisations
         return {
             count: 0,
             selected: null,
+            activeVisualisation: null,
             updateSelected: function(id) {
                 this.selected = id;
             },
@@ -115,7 +116,7 @@ crsVisualisations
             });
         };
 
-        $scope.infoVisible = true;
+        $scope.infoVisible = false;
 
     })
     .controller('crsVisualisationDirectiveController', function ( $scope, $element, $window, ijsRequest, $timeout, visualisationStatus ) {
@@ -125,14 +126,17 @@ crsVisualisations
             $scope.visualisationDataLoaded = true;
         });
 
-        $scope.toggleVisualisation = function () {
+        $scope.toggleVisualisation = function ( requestedState ) {
 
-            if ( $scope.visualisationActive ) {
+            if ( $scope.visualisationActive && (requestedState == 'off' || typeof(requestedState) == 'undefined') ) {
+                if ( $scope.visualisationType == 'layers' ) {
+                    $scope.visualisationStatus.selected = null;
+                }
                 if ( $scope.visualisationStatus.count > 1 ) {
                     $scope.visualisationActive = false;
                     $scope.visualisationStatus.count--;
                 }
-            } else {
+            } else if ( !$scope.visualisationActive && (requestedState == 'on' || typeof(requestedState) == 'undefined') ) {
                 if ( $scope.visualisationStatus.count < 3 ) {
                     $scope.visualisationActive = true;
                     $scope.visualisationStatus.count++;
@@ -141,12 +145,22 @@ crsVisualisations
 
             $timeout(function(){
                 window.dispatchEvent(new Event('resize'));
-            }, 300);
+            });
 
         };
 
+
+        /* If a node is selected, open the data list */
+        $scope.$watch('visualisationStatus', function() {
+
+            if ($scope.visualisationType == 'layers' && $scope.visualisationStatus.selected) {
+                $scope.toggleVisualisation( 'on' );
+            }
+
+        }, true);
+
     })
-    .controller('crsDatalistDirectiveController', function ( $scope, $element, $window, visualisationStatus ) {
+    .controller('crsDatalistDirectiveController', function ( $scope, $element, $window, visualisationStatus, $timeout ) {
 
         $scope.filters = {
             order       :   null,
@@ -157,6 +171,7 @@ crsVisualisations
 
         $scope.selectEntry = function ( entryId ) {
             $scope.visualisationStatus.selected = entryId;
+            $scope.visualisationStatus.activeVisualisation = 'layers';
         };
 
         $scope.toggleSortOrder = function (){
@@ -226,27 +241,46 @@ crsVisualisations
 
         $scope.loadDatalist($scope.layerData);
 
+        /**
+         * DOM manipulation is necessary to scroll the data list to the correct position
+         * which is why this particular $watch function has to be procedural rather than stat-driven
+         */
+
         $scope.$watch('visualisationStatus', function() {
 
-            $('#data-record-list .entry').removeClass('active');
+            var showSelectedRecord = function () {
 
-            if ($scope.visualisationStatus.selected) {
+                var $recordList = angular.element('#data-record-list');
 
-                var $selectedEntry = angular.element('#entry-' + $scope.visualisationStatus.selected);
+                if ( $recordList.length > 0 && $recordList.is(':visible') ) {
 
-                if ($selectedEntry.length > 0) {
+                    $recordList.find('.entry').removeClass('active');
 
-                    var $recordList = angular.element('#data-record-list');
+                    if ($scope.visualisationStatus.selected) {
 
-                    var selectedEntryPosition = $selectedEntry.position().top + $recordList[0].scrollTop;
+                        var $selectedEntry = angular.element('#entry-' + $scope.visualisationStatus.selected);
 
-                    $selectedEntry.addClass('active')
+                        if ($selectedEntry.length > 0) {
 
-                    $recordList.animate({scrollTop: selectedEntryPosition}, 300);
+                            var $recordList = angular.element('#data-record-list');
 
+                            var selectedEntryPosition = $selectedEntry.position().top + $recordList[0].scrollTop;
+
+                            $selectedEntry.addClass('active')
+
+                            $recordList.animate({scrollTop: selectedEntryPosition}, 300);
+                        }
+                    }
+
+                } else {
+                    $timeout(function(){
+                        showSelectedRecord();
+                    }, 100);
                 }
 
             }
+
+            showSelectedRecord();
 
         }, true);
 
@@ -474,15 +508,12 @@ crsVisualisations
                 })
                 .attr('r', function (d) { return 3 * d.size; });
 
-
-
-
-
             node.on('click', function(d, i) {
 
                 // Node has been clicked. Select the node.
                 $scope.$apply(function() {
                     $scope.visualisationStatus.selected = d.guid;
+                    $scope.visualisationStatus.activeVisualisation = 'graph';
                 });
 
             });
@@ -492,7 +523,7 @@ crsVisualisations
 
                     // No node has been clicked. Deselect nodes.
                     $scope.$apply(function() {
-                        $scope.visualisationStatus.selected = '';
+                        $scope.visualisationStatus.selected = null;
                     });
 
                 }
@@ -540,7 +571,8 @@ crsVisualisations
         $scope.markerMap = {}; //a global variable unless you extend L.GeoJSON
 
         $scope.defaults = {
-            maxZoom: 10
+            maxZoom: 10,
+            minZoom: 2
         }
 
         //Add the marker id as a data item (called "data-artId") to the "a" element
@@ -580,25 +612,16 @@ crsVisualisations
 
                     $scope.nodeLegend = mapObject.styledefinition.nodestyles;
 
-
-
                     angular.extend($scope, mapObject);
 
-                    var center = {};
-
-                    center.lat      =   mapObject.center[0];
-                    center.lng      =   mapObject.center[1];
-
-                    $scope.center = center;
-
-                    $scope.maxbounds = leafletBoundsHelpers.createBoundsFromArray([
+                    var maxbounds = leafletBoundsHelpers.createBoundsFromArray([
                         [ 85, 180 ],
                         [ -85, -180 ]
                     ]);
 
                     var bounds = leafletBoundsHelpers.createBoundsFromArray([
-                        [ 85, 180 ],
-                        [ -85, -180 ]
+                        [ 65, 170 ],
+                        [ -50, -160 ]
                     ]);
 
                     if (mapObject.bbox && mapObject.bbox.northeast && mapObject.bbox.southwest) {
@@ -606,13 +629,15 @@ crsVisualisations
                             mapObject.bbox.northeast,
                             mapObject.bbox.southwest
                         ]);
-                        $scope.center = null;
                     }
 
                     $scope.bounds = bounds;
 
                     angular.extend($scope, {
-                        layers : {}
+                        center      :   {},
+                        bounds      :   bounds,
+                        maxbounds   :   maxbounds,
+                        layers      :   {}
                     });
 
                     // Base background layers
@@ -824,6 +849,7 @@ crsVisualisations
                         layer.bringToFront();
 
                         $scope.visualisationStatus.selected = feature.id;
+                        $scope.visualisationStatus.activeVisualisation = 'map';
 
                     });
 
@@ -856,9 +882,12 @@ crsVisualisations
 
                     selectedMarker.bringToFront();
 
-                    var newZoomLevel = 4;
+                    if ( $scope.visualisationStatus.activeVisualisation != 'map' ) {
 
-                    $scope.map.setView(selectedMarker.getLatLng(), newZoomLevel, {animate: true});
+                        var newZoomLevel = 4;
+
+                        $scope.map.setView(selectedMarker.getLatLng(), newZoomLevel, {animate: true});
+                    }
                 }
             }
         };

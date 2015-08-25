@@ -12,8 +12,6 @@
                     <span ng-bind-html="entry.legendLabel | highlight: $select.search"></span>
                 </ui-select-choices>
             </ui-select>
-
-
         </div>
         <div class="select sorting">
             <div class="sort-field">
@@ -33,8 +31,8 @@
         <li class="entry" id="entry-{{entry.id}}" ng-attr-title="{{styledefinition.nodestyles[entry.style].legendLabel}}" ng-repeat="entry in data | filter:filters.search:strict | orderObjectBy: filters.order:filters.ascending" ng-click="selectEntry( entry.id )">
             <ul>
                 <li ng-repeat="field in entry.fields | filter: header.show " ng-class="{ primary: columnheaders[$index].title == 'Name'}" ng-show="columnheaders[$index].show">
+                    <span class="legend-indicator" ng-if="styledefinition && columnheaders[$index].id == 'name'" ng-attr-style="background-color: {{ styledefinition.nodestyles[entry.style].fillColor }}" ng-bind="styledefinition.nodestyles[entry.style].legendLabel"></span>
                     <h4 class="field-key" ng-class="'field-key-' + columnheaders[$index].id">
-                        <span class="legend-indicator" ng-if="styledefinition && columnheaders[$index].id == 'name'" ng-attr-style="background-color: {{ styledefinition.nodestyles[entry.style].fillColor }}" ng-bind="styledefinition.nodestyles[entry.style].legendLabel"></span>
                         <span ng-if="columnheaders[$index].id != 'name'" ng-bind="columnheaders[$index].title + ': '"></span>
                     </h4>
                     <span class="field-value" ng-class="'field-value-' + columnheaders[$index].id" ng-bind="field.v"></span>

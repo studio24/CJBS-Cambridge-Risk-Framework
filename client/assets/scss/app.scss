@@ -79,13 +79,11 @@ nav {
     }
     &.project-navigation {
         .project-list {
-            padding-top: rem-calc(10);
-            padding-left: rem-calc(5);
-            padding-right: rem-calc(5);
+            padding: rem-calc(5);
 
             .project-tile {
                 position: relative;
-                margin-top: 10px;
+                padding: rem-calc(8);
 
                 .project-link {
                     width: 100%;
@@ -459,8 +457,6 @@ nav {
 }
 .sliding-panel {
     border-left: 2px solid $color-black;
-    transition-property: all;
-    transition-duration: 0.3s;
 }
 .panel-toolbar {
     h2 {
@@ -493,6 +489,8 @@ nav {
     display: inline-block;
     vertical-align: middle;
     margin: 0 10px 3px 0;
+    overflow: hidden;
+    text-align: left;
 }
 .datalist {
     margin: 0;
@@ -549,7 +547,7 @@ nav {
                     color: $color-highlight;
                 }
             }
-            span, .field-key, .field-value {
+            .filtered-highlight, .field-key, .field-value {
                 font-size: rem-calc(12);
                 display: inline;
                 line-height: rem-calc(16);
@@ -585,7 +583,7 @@ nav {
             }
             .legend-indicator {
                 position: absolute;
-                top: 23px;
+                top: 44px;
                 left: 15px;
             }
             .primary {
@@ -639,6 +637,14 @@ nav {
     &:hover:after {
         color: $color-white;
 
+    }
+}
+.select2-drop .select2-results {
+    max-height: rem-calc(500);
+
+    .select2-result-label {
+        padding: rem-cal(2) rem-cal(6);
+        font-size: rem-cal(12);
     }
 }
 .filters {
@@ -906,6 +912,10 @@ body {
     line-height: 1.3rem;
     color: $color-white;
 
+    .panel-toolbar h2 {
+        margin-right: rem-calc(40);
+        border-bottom: 1px solid $color-toolbar-edge;
+    }
     h1, h2, h3, h4, p, a {
         color: $color-white;
     }
@@ -979,6 +989,13 @@ body {
         &:hover .project-thumbnail {
             border-color: $color-white;
         }
+        .fa-info-circle {
+            color: $color-dark-grey;
+            font-size: rem-calc(13);
+            vertical-align: middle;
+            position: relative;
+            top: -2px;
+        }
     }
     .project-control {
         display: block;
@@ -993,8 +1010,18 @@ body {
         background-color: $color-toolbar-button;
     }
     .project-exit {
-        font-weight: 800;
-        font-size: rem-calc(22);
+        font-weight: 100;
+        font-size: rem-calc(20);
+        width: rem-calc(60);
+        padding-left: rem-calc(10);
+        padding-right: 0;
+        background-color: transparent;
+        border-color: transparent;
+        float: left;
+
+        i {
+            margin-right: 5px;
+        }
     }
 }
 .modal-overlay {
@@ -1011,9 +1038,44 @@ body {
     animation-fill-mode: both;
     -webkit-animation-duration: 0.2s;
     animation-duration: 0.2s;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid $color-toolbar-edge;
 
-    img {
-        margin-bottom: rem-calc(14);
+    .image-wrapper {
+        overflow: hidden;
+        position: absolute;
+        top: -52%;
+        left: -52%;
+        width: 204%;
+        height: 204%;
+        background-color: #000;
+
+        img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            margin: auto;
+            width: auto;
+            min-width: 52%;
+            min-height: 52%;
+            -webkit-filter: blur(5px);
+            -moz-filter: blur(5px);
+            -o-filter: blur(5px);
+            -ms-filter: blur(5px);
+            filter: blur(5px);
+            -webkit-opacity: 0.4;
+            -moz-opacity: 0.4;
+            -o-opacity: 0.4;
+            -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=40)";
+            opacity: 0.4;
+        }
+    }
+    .modal-content {
+        position: relative;
+        text-shadow: 0 0 3px #000;
     }
     h1 {
         margin: rem-calc(4) 0 rem-calc(4);
@@ -1073,34 +1135,36 @@ body {
 }
 
 #legend {
+    $legendColumnCount: 1;
     color: white;
     top: 0;
     left: 0;
     overflow-y: auto;
-    padding: 41px 1% 2%;
+    padding: rem-calc(10);
     z-index: 1001;
     background: rgba(0, 0, 0, 0.6);
     position: absolute;
     height: 100%;
-}
 
-#legend li {
-    width: 20em;
-    display: inline-block;
-    margin: 0 1.5% 2% 1.4%;
-    font-size: 80%;
-}
+    ul {
+        margin: 0;
+        @if $legendColumnCount > 1 {
+            -webkit-column-count: $legendColumnCount; /* Chrome, Safari, Opera */
+            -moz-column-count: $legendColumnCount; /* Firefox */
+            column-count: $legendColumnCount;
+        }
+    }
 
-#legend li svg {
-    display: inline-block;
-}
+    li {
+        width: 20em;
+        display: inline-block;
+        margin: 0;
+        padding: 0;
+        font-size: rem-calc(12);
 
-$legendColumnCount: 1;
-#legend ul {
-    @if $legendColumnCount > 1 {
-        -webkit-column-count: $legendColumnCount; /* Chrome, Safari, Opera */
-        -moz-column-count: $legendColumnCount; /* Firefox */
-        column-count: $legendColumnCount;
+        svg {
+            display: inline-block;
+        }
     }
 }
 
@@ -1115,16 +1179,18 @@ $legendColumnCount: 1;
     height: rem-calc(30);
     width: rem-calc(120);
     bottom: 0;
+
+    &:hover {
+        background: #f26262;
+    }
+
+    &:focus {
+        outline: none;
+        background: #CF5050;
+    }
 }
 
-.legend-button:hover {
-    background: #f26262;
-}
 
-.legend-button:focus {
-    outline: none;
-    background: #CF5050;
-}
 
 //[ui-view] {
 //    transition: all 1s ease-in-out;

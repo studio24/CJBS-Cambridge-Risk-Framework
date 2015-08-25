@@ -42,12 +42,10 @@ var foundationJS = [
     'bower_components/lodash/lodash.js',
     'bower_components/d3/d3.js',
     'bower_components/restangular/dist/restangular.js',
-
     'bower_components/angular-ui-select/dist/select.js',
     'bower_components/angular-fullscreen/src/angular-fullscreen.js'
 ];
 // CSS files from libraries and other external sources
-// Currently not used. If this grows, build it into the gulpfile
 var appLibs = [
     'client/assets/js/libs/leaflet-0.7.2/**/*.*',
     'bower_components/select2/*.*'
@@ -129,6 +127,25 @@ gulp.task('uglify', function() {
         .pipe(gulp.dest('./build/assets/js/'));
 });
 
+gulp.task('uglify-vendor', function() {
+    // Foundation JavaScript
+    gulp.src(foundationJS)
+        .pipe($.uglify({
+            beautify: true,
+            mangle: false
+        }).on('error', function(e) {
+            console.log(e);
+        }))
+        .pipe($.concat('foundation.js'))
+        .pipe(gulp.dest('./build/assets/js/'));
+});
+
+gulp.task('uglify-app', function() {
+    // App JavaScript
+    return gulp.src(appJS)
+        .pipe(gulp.dest('./build/assets/js/'));
+});
+
 // Copies your app's page templates
 gulp.task('copy-templates', ['copy'], function() {
     return gulp.src('./client/templates/**/*.html')
@@ -172,7 +189,7 @@ gulp.task('default', ['build'], function() {
     gulp.watch(['./client/assets/scss/**/*', './scss/**/*'], ['sass']);
 
     // Watch JavaScript
-    gulp.watch(['./client/assets/js/**/*', './js/**/*'], ['uglify']);
+    gulp.watch(['./client/assets/js/**/*', './js/**/*'], ['uglify-app']);
 
     // Watch static files
     gulp.watch(['./client/**/*.*', '!./client/templates/**/*.*', '!./client/assets/{scss,js}/**/*.*'], ['copy']);

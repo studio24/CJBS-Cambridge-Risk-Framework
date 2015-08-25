@@ -1,6 +1,6 @@
 <div class="grid-block shrink">
     <div class="project-title-bar">
-        <a class="project-control project-exit right-align" ui-sref="home">×</a>
+        <a class="project-control project-exit" ui-sref="home"><i class="fa fa-angle-left"></i>Back</a>
         <a class="project-control project-fullscreen right-align" ng-if="fullscreenSupported" ng-click="goFullscreen()">
             <i ng-show="!fullscreen" class="fa fa-expand"></i>
             <i ng-show="fullscreen" class="fa fa-compress"></i>
@@ -11,6 +11,7 @@
         <h1 class="project-title" ng-click="showSummary()">
             <img class="project-thumbnail" ng-src="{{project.thumbnail_image}}" width="30" height="30" alt="Thumbnail image"/>
             <span ng-bind="project.name"></span>
+            <i class="fa fa-info-circle"></i>
         </h1>
         <crs-section-navigation ng-if="project.sections && project.sections.length > 1" sections="project.sections"></crs-section-navigation>
     </div>

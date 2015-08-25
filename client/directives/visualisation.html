@@ -1,6 +1,6 @@
 <div class="visualisation sliding-panel grid-block {{visualisationType}}" id="visualisation-container" ng-class="{'active': visualisationActive, 'shrink': !visualisationActive, 'order-1': visualisationType != 'layers', 'order-2': visualisationType == 'layers'}">
     <div class="grid-block panel-toolbar shrink vertical">
-        <a class="grid-block" ng-click="toggleVisualisation(visualisation)" ng-class="{active: visualisation.active}">
+        <a class="grid-block" ng-click="toggleVisualisation()" ng-class="{active: visualisation.active}">
             <img class="panel-icon panel-toggle" ng-src="{{'assets/img/' + visualisationType + '.svg'}}" ng-alt="{{visualisationType}}" ng-title="visualisationType"/>
         </a>
     </div>

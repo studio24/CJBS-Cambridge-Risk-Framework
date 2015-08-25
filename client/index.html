@@ -16,7 +16,6 @@
     <script>
         google.load("visualization", "1", {packages:["corechart"]});
     </script>
-
     <script src="assets/js/app.js"></script>
     <script src="assets/js/services/utils-service.js"></script>
     <script src="assets/js/services/http-service.js"></script>
@@ -30,11 +29,15 @@
     <zf-notification-set id="main-notifications" position="top-right"></zf-notification-set>
     <zf-modal id="main-modal">
         <a zf-close="" class="close-button">×</a>
-        <img ng-src="{{modal.image}}" alt=""/>
-        <h1 ng-bind="modal.name"></h1>
-        <h4 class="description" ng-bind="modal.description"></h4>
-        <a class="info-link" ng-if="modal.helplinkurl" ng-href="{{modal.helplinkurl}}" ng-bind="modal.helplinklabel" target="_blank"></a>
-        <p class="copyright-message" ng-bind-html="modal.copyrightmessage"></p>
+        <div class="image-wrapper">
+            <img ng-src="{{modal.image}}" alt=""/>
+        </div>
+        <div class="modal-content">
+            <h1 ng-bind="modal.name"></h1>
+            <h4 class="description" ng-bind="modal.description"></h4>
+            <a class="info-link" ng-if="modal.helplinkurl" ng-href="{{modal.helplinkurl}}" ng-bind="modal.helplinklabel" target="_blank"></a>
+            <p class="copyright-message" ng-bind-html="modal.copyrightmessage"></p>
+        </div>
     </zf-modal>
 </body>
 </html>

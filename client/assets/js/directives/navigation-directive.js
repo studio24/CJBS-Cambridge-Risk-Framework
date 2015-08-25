@@ -14,8 +14,6 @@ angular.module('crsNavigation', [])
             $scope.typecodesList = data;
         });
 
-
-
     })
     .directive('crsProjectFilters', function() {
         return {

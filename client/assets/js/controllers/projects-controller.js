@@ -208,20 +208,20 @@ app.controller('crsSectionController', ['$scope', '$sce', 'section', '$state', f
 
 }]);
 
-app.controller('crsPhaseController', ['$sce', '$scope', function ( $scope, $sce, phase, $state ) {
+app.controller('crsPhaseController', ['$scope', '$sce', 'phase', '$state', function ( $scope, $sce, phase, $state ) {
 
     $scope.phase = phase;
     if (crsConfig.debug) {
         console.log('Phase added to scope:', $scope.phase);
     }
 
+    // Load the phase content into the scope
+    $scope.content = phase;
+
     // Trust HTML so that inline styles work
     if (phase.infopanel.body && typeof(phase.infopanel.body) == 'string') {
         $scope.content.infopanel.body = $sce.trustAsHtml(phase.infopanel.body);
     }
-
-    // Load the phase content into the scope
-    $scope.content = phase;
 
     var parentState = 'phase';
 
