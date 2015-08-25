@@ -33,7 +33,8 @@
     "select2": "~3.4.5",
     "angular-fullscreen": "~1.0.1",
     "angular-sanitize": "~1.4.0",
-    "restangular": "~1.5.1"
+    "restangular": "~1.5.1",
+    "magnific-popup": "~1.0.0"
   },
   "resolutions": {
     "angular": "1.4.0"

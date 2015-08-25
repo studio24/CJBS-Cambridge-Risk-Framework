@@ -61,6 +61,36 @@ app.factory('typecodes', function ( apiRequest ) {
     return apiRequest.all('typecodes');
 });
 
+// Loading states
+
+app.factory('projectStatus', function(){
+
+    var status = {
+        project: 'pending',
+        content: 'pending',
+        visualisations: {
+            pending: 0,
+            loading: 0,
+            loaded: 0
+        }
+    }
+    status.updateVisualisations = function ( _type, _status ) {
+        status.visualisations[_type] = _status;
+        status.visualisations[_status]++;
+    };
+    status.reset = function () {
+        status.project  =   'pending';
+        status.content  =   'pending';
+        status.visualisations = {
+            pending :   0,
+            loading :   0,
+            loaded  :   0
+        }
+    };
+
+    return status;
+})
+
 // Filters
 
 app.filter('getByAttr', function() {

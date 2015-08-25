@@ -43,11 +43,13 @@ var foundationJS = [
     'bower_components/d3/d3.js',
     'bower_components/restangular/dist/restangular.js',
     'bower_components/angular-ui-select/dist/select.js',
+    'bower_components/magnific-popup/dist/jquery.magnific-popup.js',
     'bower_components/angular-fullscreen/src/angular-fullscreen.js'
 ];
 // CSS files from libraries and other external sources
 var appLibs = [
     'client/assets/js/libs/leaflet-0.7.2/**/*.*',
+    'bower_components/magnific-popup/dist/magnific-popup.css',
     'bower_components/select2/*.*'
 ];
 // These files are for your app's JavaScript

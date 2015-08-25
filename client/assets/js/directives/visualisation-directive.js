@@ -119,11 +119,17 @@ crsVisualisations
         $scope.infoVisible = false;
 
     })
-    .controller('crsVisualisationDirectiveController', function ( $scope, $element, $window, ijsRequest, $timeout, visualisationStatus ) {
+    .controller('crsVisualisationDirectiveController', function ( $scope, $element, $window, ijsRequest, $timeout, visualisationStatus, projectStatus ) {
+
+        projectStatus.updateVisualisations($scope.visualisationType, 'loading');
 
         ijsRequest.get( $scope.visualisationUrl ).then(function(_data){
+
             $scope.visualisationData = _data.originalElement;
             $scope.visualisationDataLoaded = true;
+
+            projectStatus.updateVisualisations($scope.visualisationType, 'loaded');
+
         });
 
         $scope.toggleVisualisation = function ( requestedState ) {
@@ -148,7 +154,6 @@ crsVisualisations
             });
 
         };
-
 
         /* If a node is selected, open the data list */
         $scope.$watch('visualisationStatus', function() {

@@ -14,6 +14,17 @@ angular.module('crsNavigation', [])
             $scope.typecodesList = data;
         });
 
+        var filters = {
+            name        :   '',
+            threat      :   '',
+            threatclass :   '',
+            typecode    :   ''
+        }
+
+        angular.extend($scope, {
+            filters : filters
+        });
+
     })
     .directive('crsProjectFilters', function() {
         return {
@@ -108,8 +119,6 @@ angular.module('crsNavigation', [])
                 return false;
             }
         };
-
-
     })
     .directive('crsPhaseNavigation', function() {
         return {

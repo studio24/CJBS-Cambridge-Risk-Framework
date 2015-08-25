@@ -1024,6 +1024,12 @@ body {
         }
     }
 }
+.project-modal {
+    display: none;
+}
+.mfp-content > * {
+    margin: 0 auto;
+}
 .modal-overlay {
     background-color: rgba(0, 0, 0, 0.85);
     -webkit-animation-fill-mode: both;

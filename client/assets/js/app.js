@@ -71,7 +71,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
         })
         .state('project', {
             resolve     : {
-                projectSummary: [ '$stateParams', 'projectList', 'utilsService', '$rootScope', function( $stateParams, projectList, utilsService, $rootScope ) {
+                projectSummary: [ '$stateParams', 'projectList', 'utilsService', 'projectStatus', '$rootScope', function( $stateParams, projectList, utilsService, projectStatus, $rootScope ) {
 
                     // Grab the project list if it's not already available on the rootscope.
                     $rootScope.projectList = $rootScope.projectList || projectList;
@@ -88,7 +88,24 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                                 // Once you find the current project, check if it's been opened before.
                                 if (!$rootScope.projectList[i].viewed) {
                                     // The project hasn't been opened before. Show the info modal and then mark this project as viewed.
-                                    utilsService.modal(projectSummary);
+
+                                    var modal = {};
+
+                                    projectStatus.reset();
+
+                                    modal.projectSummary = projectSummary;
+                                    modal.projectStatus = projectStatus;
+
+                                    utilsService.modal.show(modal);
+
+                                    $rootScope.closeModal = utilsService.modal.hide;
+
+                                    $rootScope.$watch('modal', function(){
+                                        if ( modal.projectStatus.visualisations.pending > 0 && modal.projectStatus.visualisations.loaded >= modal.projectStatus.visualisations.pending ) {
+                                            utilsService.modal.hide();
+                                        }
+                                    }, true);
+
                                     $rootScope.projectList[i].viewed = true;
                                 }
 
@@ -158,7 +175,7 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
                 },
                 "phase-navigation": {
                     templateUrl: 'templates/phase-navigation.html',
-                    controller: 'crsSectionController'
+                    controller: 'crsPhaseNavigationController'
                 }
             }
         })

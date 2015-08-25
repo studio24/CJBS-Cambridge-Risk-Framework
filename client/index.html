@@ -10,6 +10,7 @@
     <script>try{Typekit.load();}catch(e){}</script>
     <script src="assets/js/foundation.js"></script>
     <link rel="stylesheet" href="assets/libs/leaflet.css">
+    <link rel="stylesheet" href="assets/libs/magnific-popup.css">
     <script src="assets/js/libs/leaflet-0.7.2/leaflet.js"></script>
     <script src="assets/js/libs/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
     <script src="https://www.google.com/jsapi"></script>
@@ -27,17 +28,27 @@
 <body ng-class="state.bodyClass">
     <div class="grid-frame" ui-view="content"></div>
     <zf-notification-set id="main-notifications" position="top-right"></zf-notification-set>
-    <zf-modal id="main-modal">
-        <a zf-close="" class="close-button">×</a>
-        <div class="image-wrapper">
-            <img ng-src="{{modal.image}}" alt=""/>
-        </div>
-        <div class="modal-content">
-            <h1 ng-bind="modal.name"></h1>
-            <h4 class="description" ng-bind="modal.description"></h4>
-            <a class="info-link" ng-if="modal.helplinkurl" ng-href="{{modal.helplinkurl}}" ng-bind="modal.helplinklabel" target="_blank"></a>
-            <p class="copyright-message" ng-bind-html="modal.copyrightmessage"></p>
-        </div>
-    </zf-modal>
+    <div class="project-modal">
+        <aside id="loading-modal" class="modal is-active">
+            <div class="image-wrapper">
+                <img ng-src="{{modal.projectSummary.image}}" alt=""/>
+            </div>
+            <div class="modal-content">
+                <h1 ng-bind="modal.projectSummary.name"></h1>
+                <div class="loadingState" ng-if="modal.projectStatus.project != 'loaded' || modal.projectStatus.content != 'loaded' || modal.projectStatus.visualisations.loaded < modal.projectStatus.visualisations.pending">
+                    <p ng-if="modal.projectStatus.project == 'loading'">Loading project structure...</p>
+                    <p ng-if="modal.projectStatus.content == 'loading'">Loading content...</p>
+                    <div ng-if="modal.projectStatus.project == 'loaded' && modal.projectStatus.content == 'loaded'">
+                        <div ng-if="modal.projectStatus.visualisations.loaded < modal.projectStatus.visualisations.pending">
+                            <p>Loading visualisations. <span ng-bind="modal.projectStatus.visualisations.loaded"></span> of <span ng-bind="modal.projectStatus.visualisations.pending"></span> loaded... <a ng-click="closeModal()"> Continue to project &rarr;</a></p>
+                        </div>
+                    </div>
+                </div>
+                <h4 class="description" ng-bind="modal.projectSummary.description"></h4>
+                <a class="info-link" ng-if="modal.projectSummary.helplinkurl" ng-href="{{modal.projectSummary.helplinkurl}}" ng-bind="modal.projectSummary.helplinklabel" target="_blank"></a>
+                <p class="copyright-message" ng-bind-html="modal.projectSummary.copyrightmessage"></p>
+            </div>
+        </aside>
+    </div>
 </body>
 </html>

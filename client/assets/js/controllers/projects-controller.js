@@ -1,6 +1,8 @@
-app.controller('crsRootController', ['$scope', 'Fullscreen', 'utilsService', function ( $scope, Fullscreen, utilsService ) {
+app.controller('crsRootController', ['$scope', 'Fullscreen', 'utilsService', 'projectStatus', function ( $scope, Fullscreen, utilsService, projectStatus ) {
 
     $scope.fullscreenSupported = Fullscreen.isSupported();
+
+    $scope.projectStatus = projectStatus;
 
     if ($scope.fullscreenSupported) {
 
@@ -29,38 +31,42 @@ app.controller('crsRootController', ['$scope', 'Fullscreen', 'utilsService', fun
         });
     }
 
-    $scope.aboutApp = function(){
-        utilsService.modal({
-            name        :   'Cambridge Risk Framework',
-            description :   'Lorem ispum dolor sit amet con sectetur adepiscing elit...'
-        });
-    };
-
 }]);
 
 app.controller('crsProjectListController', ['$scope', 'projectList', function ( $scope, projectList ) {
 
     $scope.projects = projectList;
+
     if (crsConfig.debug) {
         console.log( 'Project list added to scope:', $scope.projects );
     }
 
 }]);
 
-app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', 'projectSummary', '$state', '$stateParams', 'utilsService', function(FoundationApi, $scope, project, projectSummary, $state, $stateParams, utilsService) {
+app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', 'projectSummary', '$state', '$stateParams', 'utilsService', 'projectStatus', function(FoundationApi, $scope, project, projectSummary, $state, $stateParams, utilsService, projectStatus) {
 
     $scope.project = project;
+
     if (crsConfig.debug) {
         console.log('Project added to scope:', $scope.project);
     }
 
+    projectStatus.project = 'loaded';
+
     $scope.projectSummary = $scope.projectSummary || projectSummary;
+
+    var modal = {};
+
+    modal.projectSummary = $scope.projectSummary;
+    modal.projectStatus = projectStatus;
+
+    projectStatus.projectSummary = $scope.projectSummary || projectSummary;
 
     // If this level has content, it needs to be displayed so add it to the scope. Child levels will overwrite the content when called
     $scope.content = project;
 
     $scope.showSummary = function(){
-        utilsService.modal($scope.projectSummary);
+        utilsService.modal.show(modal);
     };
 
     var parentState = 'project',
@@ -81,18 +87,12 @@ app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', 'p
 
 }]);
 
-app.controller('crsSectionController', ['$scope', '$sce', 'section', '$state', function ( $scope, $sce, section, $state ) {
+app.controller('crsSectionController', ['$scope', '$sce', 'section', '$state', 'projectStatus', function ( $scope, $sce, section, $state, projectStatus ) {
 
     $scope.section = section;
+
     if (crsConfig.debug) {
         console.log('Section added to scope:', $scope.section);
-    }
-
-    $scope.content = section;
-
-    // Trust HTML so that inline styles work
-    if (section.infopanel.body && typeof(section.infopanel.body) == 'string') {
-        $scope.content.infopanel.body = $sce.trustAsHtml(section.infopanel.body);
     }
 
     var parentState = 'section',
@@ -109,8 +109,16 @@ app.controller('crsSectionController', ['$scope', '$sce', 'section', '$state', f
                 'phaseNumber': 1
             });
 
-        }
+        } else {
+            $scope.content = section;
 
+            projectStatus.content = 'loaded';
+        }
+    }
+
+    // Trust HTML so that inline styles work
+    if (section.infopanel.body && typeof(section.infopanel.body) == 'string') {
+        $scope.content.infopanel.body = $sce.trustAsHtml(section.infopanel.body);
     }
 
     var defaultVisualisation;
@@ -159,6 +167,8 @@ app.controller('crsSectionController', ['$scope', '$sce', 'section', '$state', f
     for (var key in $scope.content.visualisations) {
 
         if ($scope.content.visualisations.hasOwnProperty(key)) {
+
+            projectStatus.updateVisualisations($scope.visualisationType, 'pending');
 
             var visualisation = {
                 visualisationType: key,
@@ -208,12 +218,21 @@ app.controller('crsSectionController', ['$scope', '$sce', 'section', '$state', f
 
 }]);
 
-app.controller('crsPhaseController', ['$scope', '$sce', 'phase', '$state', function ( $scope, $sce, phase, $state ) {
+app.controller('crsPhaseNavigationController', ['$scope', 'section', function ( $scope, section ) {
+
+    $scope.section = section;
+
+}]);
+
+app.controller('crsPhaseController', ['$scope', '$sce', 'phase', '$state', 'projectStatus', function ( $scope, $sce, phase, $state, projectStatus ) {
 
     $scope.phase = phase;
+
     if (crsConfig.debug) {
         console.log('Phase added to scope:', $scope.phase);
     }
+
+    projectStatus.content = 'loaded';
 
     // Load the phase content into the scope
     $scope.content = phase;
@@ -258,7 +277,6 @@ app.controller('crsPhaseController', ['$scope', '$sce', 'phase', '$state', funct
 
     };
 
-
     angular.extend($scope, {
         visualisations  : [],
         activeCount     : 0
@@ -271,6 +289,8 @@ app.controller('crsPhaseController', ['$scope', '$sce', 'phase', '$state', funct
     for (var key in $scope.content.visualisations) {
 
         if ($scope.content.visualisations.hasOwnProperty(key)) {
+
+            projectStatus.updateVisualisations($scope.visualisationType, 'pending');
 
             var visualisation = {
                 visualisationType: key,
