@@ -12,11 +12,14 @@
         </div>
     </div>
 </div>
-<div class="grid-block" ng-if="projects.length > 0">
-    <div class="small-12 medium-9 grid-block">
+<div class="grid-block vertical medium-horizontal" ng-if="projects.length > 0">
+    <div class="small-12 medium-3 grid-block medium-order-2">
+        <crs-project-filters filters="filters" search="search"></crs-project-filters>
+    </div>
+    <div class="small-12 medium-9 grid-block medium-order-1">
         <nav class="grid-content project-navigation" >
             <ul class="grid-block project-list small-up-1 medium-up-2 large-up-4">
-                <li ng-repeat="project in projects | filter:filters:strict" class="grid-content project-tile">
+                <li ng-repeat="project in projects | filter:search:strict | exact:filters:strict" class="grid-content project-tile">
                     <a class="project-link" ui-sref="project({ projectId: project.id })">
                         <img class="project-thumbnail" ng-if="project.image" ng-src="{{project.image}}">
                         <img class="project-thumbnail" ng-if="!project.image" src="http://placehold.it/640x360">
@@ -26,8 +29,5 @@
                 </li>
             </ul>
         </nav>
-    </div>
-    <div id="project-filters" class="hide-for-small show-for-medium medium-3 grid-block">
-        <crs-project-filters filters="filters"></crs-project-filters>
     </div>
 </div>

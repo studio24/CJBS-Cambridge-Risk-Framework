@@ -380,7 +380,7 @@ crsVisualisations
             var width = d3.select(container)[0][0].clientWidth,
                 height = 800;
 
-            $scope.nodeLegend = dataset.styledefinition.nodestyles;
+            $scope.nodeLegend = dataset.styledefinition;
 
             // Setup the required variables
             var links = [];
@@ -615,7 +615,7 @@ crsVisualisations
 
                     console.log(mapObject);
 
-                    $scope.nodeLegend = mapObject.styledefinition.nodestyles;
+                    $scope.nodeLegend = mapObject.styledefinition;
 
                     angular.extend($scope, mapObject);
 
@@ -624,22 +624,39 @@ crsVisualisations
                         [ -85, -180 ]
                     ]);
 
-                    var bounds = leafletBoundsHelpers.createBoundsFromArray([
-                        [ 65, 170 ],
-                        [ -50, -160 ]
-                    ]);
+                    var bounds = null;
+                    var center = {};
+                    var zoom = null;
 
                     if (mapObject.bbox && mapObject.bbox.northeast && mapObject.bbox.southwest) {
+
                         bounds = leafletBoundsHelpers.createBoundsFromArray([
                             mapObject.bbox.northeast,
                             mapObject.bbox.southwest
                         ]);
+
+                    } else if (mapObject.center) {
+
+                        center = mapObject.center;
+
+                        if (mapObject.zoom) {
+                            zoom = mapObject.zoom;
+                        } else {
+                            zoom = $scope.defaults.minZoom;
+                        }
+
+                    } else {
+
+                        bounds = leafletBoundsHelpers.createBoundsFromArray([
+                            [ 65, 170 ],
+                            [ -50, -160 ]
+                        ]);
+
                     }
 
-                    $scope.bounds = bounds;
-
                     angular.extend($scope, {
-                        center      :   {},
+                        center      :   center,
+                        zoom        :   zoom,
                         bounds      :   bounds,
                         maxbounds   :   maxbounds,
                         layers      :   {}
@@ -898,6 +915,23 @@ crsVisualisations
         };
 
     }])
+    .controller('crsLegendController', [ "$scope", function ( $scope ) {
+
+        $scope.maxNodeSize = 0;
+
+        for (var key in $scope.data.nodestyles) {
+            if ($scope.data.nodestyles.hasOwnProperty(key)) {
+
+                if ( $scope.data.nodestyles[key].size > $scope.maxNodeSize ) {
+                    $scope.maxNodeSize = $scope.data.nodestyles[key].size;
+                }
+
+            }
+        }
+
+        console.log($scope.maxNodeSize);
+
+    }])
     .directive('crsInfoPanel', function() {
         return {
             restrict: 'AE',
@@ -968,13 +1002,14 @@ crsVisualisations
             controller: 'crsChartDirectiveController'
         };
     })
-    .directive('graphlegend', function() {
+    .directive('crsLegend', function() {
         return {
             restrict: 'E',
             scope: {
                 data: '='
             },
             replace: true,
-            templateUrl: 'directives/legend.html'
+            templateUrl: 'directives/legend.html',
+            controller: 'crsLegendController'
         };
     });

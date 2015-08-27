@@ -36,11 +36,11 @@
             <div class="modal-content">
                 <h1 ng-bind="modal.projectSummary.name"></h1>
                 <div class="loadingState" ng-if="modal.projectStatus.project != 'loaded' || modal.projectStatus.content != 'loaded' || modal.projectStatus.visualisations.loaded < modal.projectStatus.visualisations.pending">
-                    <p ng-if="modal.projectStatus.project == 'loading'">Loading project structure...</p>
-                    <p ng-if="modal.projectStatus.content == 'loading'">Loading content...</p>
+                    <p ng-if="modal.projectStatus.project == 'loading'">Initialising...</p>
+                    <p ng-if="modal.projectStatus.content == 'loading'">Loading...</p>
                     <div ng-if="modal.projectStatus.project == 'loaded' && modal.projectStatus.content == 'loaded'">
                         <div ng-if="modal.projectStatus.visualisations.loaded < modal.projectStatus.visualisations.pending">
-                            <p>Loading visualisations. <span ng-bind="modal.projectStatus.visualisations.loaded"></span> of <span ng-bind="modal.projectStatus.visualisations.pending"></span> loaded... <a ng-click="closeModal()"> Continue to project &rarr;</a></p>
+                            <p><span ng-bind="modal.projectStatus.visualisations.loaded"></span> of <span ng-bind="modal.projectStatus.visualisations.pending"></span> loaded... <a ng-click="closeModal()"> Continue &rarr;</a></p>
                         </div>
                     </div>
                 </div>

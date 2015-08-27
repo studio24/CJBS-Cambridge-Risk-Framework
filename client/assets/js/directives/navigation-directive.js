@@ -14,15 +14,15 @@ angular.module('crsNavigation', [])
             $scope.typecodesList = data;
         });
 
-        var filters = {
-            name        :   '',
-            threat      :   '',
-            threatclass :   '',
-            typecode    :   ''
-        }
-
         angular.extend($scope, {
-            filters : filters
+            filters : {
+                threat      :   '',
+                threatclass :   '',
+                typecode    :   ''
+            },
+            search  :   {
+                name        :   ''
+            }
         });
 
     })
@@ -32,7 +32,8 @@ angular.module('crsNavigation', [])
             replace: true,
             templateUrl: 'directives/project-filters.html',
             scope: {
-                filters : '='
+                filters : '=',
+                search  : '='
             },
             controller: 'crsProjectFiltersDirectiveController'
         };
