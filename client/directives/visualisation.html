@@ -5,9 +5,9 @@
         </a>
     </div>
     <div class="grid-block" ng-class="{'loading': !visualisationDataLoaded}">
-        <crs-datalist   ng-show="visualisationActive"   ng-if="visualisationType == 'layers'    && visualisationDataLoaded" layer-data="visualisationData"  visualisation-status="visualisationStatus" class="grid-block visualisation-content"></crs-datalist>
-        <crs-map        ng-show="visualisationActive"   ng-if="visualisationType == 'maps'      && visualisationDataLoaded" map-data="visualisationData"    visualisation-status="visualisationStatus" class="grid-block visualisation-content"></crs-map>
-        <crs-graph      ng-show="visualisationActive"   ng-if="visualisationType == 'graphs'    && visualisationDataLoaded" graph-data="visualisationData"  visualisation-status="visualisationStatus" class="grid-block visualisation-content"></crs-graph>
-        <crs-chart      ng-show="visualisationActive"   ng-if="visualisationType == 'charts'    && visualisationDataLoaded" chart-data="visualisationData"  visualisation-status="visualisationStatus" class="grid-block visualisation-content"></crs-chart>
+        <crs-datalist   ng-show="visualisationActive"   ng-if="visualisationType == 'layers'    && visualisationDataLoaded" layer-data="visualisationData"  visualisation-status="visualisationStatus" class="grid-block visualisation-content crs-datalist"></crs-datalist>
+        <crs-map        ng-show="visualisationActive"   ng-if="visualisationType == 'maps'      && visualisationDataLoaded" map-data="visualisationData"    visualisation-status="visualisationStatus" class="grid-block visualisation-content crs-map"></crs-map>
+        <crs-graph      ng-show="visualisationActive"   ng-if="visualisationType == 'graphs'    && visualisationDataLoaded" graph-data="visualisationData"  visualisation-status="visualisationStatus" class="grid-block visualisation-content crs-graph"></crs-graph>
+        <crs-chart      ng-show="visualisationActive"   ng-if="visualisationType == 'charts'    && visualisationDataLoaded" chart-data="visualisationData"  visualisation-status="visualisationStatus" class="grid-block visualisation-content crs-chart"></crs-chart>
     </div>
 </div>

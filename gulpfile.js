@@ -25,7 +25,8 @@ var sassPaths = [
 ];
 // These files include Foundation for Apps and its dependencies
 var foundationJS = [
-    'client/assets//js/libs/jquery-2.1.4.min.js',
+    'bower_components/aight/aight.js',
+    'client/assets/js/libs/jquery-2.1.4.min.js',
     'bower_components/fastclick/lib/fastclick.js',
     'bower_components/viewport-units-buggyfill/viewport-units-buggyfill.js',
     'bower_components/tether/tether.js',

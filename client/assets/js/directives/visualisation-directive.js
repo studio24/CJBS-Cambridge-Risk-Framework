@@ -111,9 +111,10 @@ crsVisualisations
         $scope.toggleInfoPanel = function () {
             $scope.infoVisible = !$scope.infoVisible;
 
+            angular.element($window).trigger('resize');
             $timeout(function(){
-                window.dispatchEvent(new Event('resize'));
-            });
+                angular.element($window).trigger('resize');
+            }, 300);
         };
 
         $scope.infoVisible = false;
@@ -149,9 +150,10 @@ crsVisualisations
                 }
             }
 
+            angular.element($window).trigger('resize');
             $timeout(function(){
-                window.dispatchEvent(new Event('resize'));
-            });
+                angular.element($window).trigger('resize');
+            }, 300);
 
         };
 
@@ -550,10 +552,6 @@ crsVisualisations
                 // Resize
             });
 
-            angular.element(document).ready(function () {
-                // Resize
-            });
-
         };
 
         $scope.loadGraphs($scope.graphData);
@@ -571,14 +569,14 @@ crsVisualisations
         }, true);
 
     })
-    .controller('crsMapDirectiveController', [ "$scope", "leafletData", "leafletBoundsHelpers", "$filter", function ( $scope, leafletData, leafletBoundsHelpers, $filter, visualisationStatus ) {
+    .controller('crsMapDirectiveController', [ "$scope", "leafletData", "leafletBoundsHelpers", "$filter", '$window', 'visualisationStatus', function ( $scope, leafletData, leafletBoundsHelpers, $filter, $window, visualisationStatus ) {
 
         $scope.markerMap = {}; //a global variable unless you extend L.GeoJSON
 
         $scope.defaults = {
             maxZoom: 10,
             minZoom: 2
-        }
+        };
 
         //Add the marker id as a data item (called "data-artId") to the "a" element
         function addToList(data) {
@@ -655,6 +653,8 @@ crsVisualisations
                     }
 
                     angular.extend($scope, {
+                        width       :   100,
+                        height      :   100,
                         center      :   center,
                         zoom        :   zoom,
                         bounds      :   bounds,
@@ -900,9 +900,13 @@ crsVisualisations
 
                 var selectedMarker = $scope.markerMap[nodeId];
 
+
+
                 if (selectedMarker) {
 
-                    selectedMarker.bringToFront();
+                    $scope.selectedMarker = selectedMarker;
+
+                        selectedMarker.bringToFront();
 
                     if ( $scope.visualisationStatus.activeVisualisation != 'map' ) {
 
@@ -913,6 +917,17 @@ crsVisualisations
                 }
             }
         };
+
+        angular.element($window).bind('resize', function () {
+            var mapContainer = angular.element('.angular-leaflet-map').parent();
+
+            $scope.width = mapContainer.width();
+            $scope.height = mapContainer.height();
+
+            if ( $scope.map ) {
+                $scope.map.invalidateSize();
+            }
+        });
 
     }])
     .controller('crsLegendController', [ "$scope", function ( $scope ) {

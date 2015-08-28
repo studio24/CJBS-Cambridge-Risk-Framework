@@ -87,7 +87,7 @@ app.controller('crsProjectController', ['FoundationApi', '$scope', 'project', 'p
 
 }]);
 
-app.controller('crsSectionController', ['$scope', '$sce', 'section', '$state', 'projectStatus', function ( $scope, $sce, section, $state, projectStatus ) {
+app.controller('crsSectionController', ['$scope', '$sce', 'section', '$state', 'projectStatus', '$timeout', '$window', function ( $scope, $sce, section, $state, projectStatus, $timeout, $window ) {
 
     $scope.section = section;
 
@@ -185,12 +185,12 @@ app.controller('crsSectionController', ['$scope', '$sce', 'section', '$state', '
         }
     }
 
-    $scope.$watch('activeCount', function() {
-        //$timeout(function(){
-            window.dispatchEvent(new Event('resize'));
-        //});
-
-    });
+    $scope.$watch('visualisationStatus', function() {
+        angular.element($window).trigger('resize');
+        $timeout(function(){
+            angular.element($window).trigger('resize');
+        }, 300);
+    }, true);
 
     $scope.toggleVisualisation = function ( _visualisation ) {
 
@@ -224,7 +224,7 @@ app.controller('crsPhaseNavigationController', ['$scope', 'section', function ( 
 
 }]);
 
-app.controller('crsPhaseController', ['$scope', '$sce', 'phase', '$state', 'projectStatus', function ( $scope, $sce, phase, $state, projectStatus ) {
+app.controller('crsPhaseController', ['$scope', '$sce', 'phase', '$state', '$window', '$timeout', 'projectStatus', function ( $scope, $sce, phase, $state, $window, $timeout, projectStatus ) {
 
     $scope.phase = phase;
 
@@ -307,12 +307,12 @@ app.controller('crsPhaseController', ['$scope', '$sce', 'phase', '$state', 'proj
         }
     }
 
-    $scope.$watch('activeCount', function() {
-        //$timeout(function(){
-        window.dispatchEvent(new Event('resize'));
-        //});
-
-    });
+    $scope.$watch('visualisationStatus', function() {
+        angular.element($window).trigger('resize');
+        $timeout(function(){
+            angular.element($window).trigger('resize');
+        }, 300);
+    }, true);
 
     $scope.toggleVisualisation = function ( _visualisation ) {
 

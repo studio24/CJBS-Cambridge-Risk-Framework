@@ -6,7 +6,7 @@
         </div>
         <ul class="grid-block" ng-class="'small-up-' + phases.length">
             <li class="grid-block" ng-repeat="phase in phases" ng-class="{ highlight: state.params.phaseNumber > $index + 1, last: $index >= phases.length - 1 }">
-                <a class="grid-content" ui-sref="phase({ phaseNumber: phase.phasenumber })" ui-sref-active="active" ng-bind="phase.title">Phase title</a>
+                <a class="grid-block phase-button" ui-sref="phase({ phaseNumber: phase.phasenumber })" ui-sref-active="active"><span ng-bind="phase.title" class="show-for-medium"></span></a>
             </li>
         </ul>
     </div>
