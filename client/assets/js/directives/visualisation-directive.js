@@ -967,7 +967,7 @@ crsVisualisations
                 visualisationUrl    : '=',
                 visualisationType   : '=',
                 visualisationActive : '=',
-                visualisationStatus: '='
+                visualisationStatus : '='
             },
             controller: 'crsVisualisationDirectiveController'
         };
