@@ -1,3 +1,81 @@
+app.controller('crsTutorial1Controller', ['$scope', function ( $scope ) {
+
+    $scope.citiesList = [
+        {
+            "name"          :   "London",
+            "population"    :   1236576
+        },
+        {
+            "name"          :   "New York",
+            "population"    :   5345435
+        },
+        {
+            "name"          :   "Tokyo",
+            "population"    :   7345345
+        }
+    ];
+
+}]);
+
+
+
+
+
+
+app.controller('crsTotalPopulation', function ( $scope ) {
+
+    $scope.$watch('cities', function() {
+
+        $scope.totalPopulation = 0;
+
+        angular.forEach($scope.cities, function(city){
+            if (city.population) {
+                $scope.totalPopulation += parseInt(city.population);
+            }
+        });
+
+    }, true);
+
+});
+
+app.directive('crsTotalPopulation', function() {
+    return {
+        restrict: 'E',
+        scope: {
+            cities: '='
+        },
+        templateUrl: 'directives/total-population.html',
+        controller: 'crsTotalPopulation'
+    };
+});
+
+
+
+app.controller('crsHelloWorldController', function ( $scope, $stateParams ) {
+
+    $scope.myName = $stateParams.myName;
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 app.controller('crsRootController', ['$scope', 'Fullscreen', 'utilsService', 'projectStatus', function ( $scope, Fullscreen, utilsService, projectStatus ) {
 
     $scope.fullscreenSupported = Fullscreen.isSupported();

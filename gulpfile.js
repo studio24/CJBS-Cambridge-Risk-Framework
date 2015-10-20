@@ -175,7 +175,7 @@ gulp.task('server:start', function() {
             return [
                 modRewrite(['^[^\\.]*$ /index.html [L]'])
             ];
-        },
+        }
     });
 });
 

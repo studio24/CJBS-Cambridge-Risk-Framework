@@ -1,0 +1,13 @@
+<div class="grid-block vertical" style="margin:50px;">
+    <h1>Tutorial 1</h1>
+    <ul>
+        <li ng-repeat="city in citiesList">
+            <p>
+                <span ng-bind="city.name"></span>: Population
+                <input type="number" ng-model="city.population"></input>
+            </p>
+        </li>
+        <li><crs-total-population cities="citiesList"></crs-total-population></li>
+    </ul>
+    <a ui-sref="hello-world">Go to hello world</a>
+</div>

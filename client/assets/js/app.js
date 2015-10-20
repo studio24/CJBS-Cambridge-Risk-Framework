@@ -2,7 +2,7 @@
 
 var crsConfig = {
     debug: true
-}
+};
 
 // Initialise the app with dependencies.
 var app = angular.module('application', [
@@ -41,6 +41,24 @@ function config($urlProvider, $locationProvider, $stateProvider, RestangularProv
 
     // Set state hierarchy.
     $stateProvider
+        .state('hello-world', {
+            url: '/hello-world/:myName',
+            views       : {
+                "content": {
+                    templateUrl: 'templates/hello-world.html',
+                    controller: 'crsHelloWorldController'
+                }
+            }
+        })
+        .state('tutorial1', {
+            url: '/tutorial1',
+            views       : {
+                "content": {
+                    templateUrl: 'templates/tutorial1.html',
+                    controller: 'crsTutorial1Controller'
+                }
+            }
+        })
         .state('root', {
             resolve     : {
                 projectList: [ 'projects', function( projects ) {
